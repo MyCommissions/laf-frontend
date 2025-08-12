@@ -8,7 +8,7 @@ const router = createBrowserRouter([
         path: '/signin',
         element: (
             <GuestOnlyRoute>
-                <pages.LoginPage />
+                <pages.LandingPage />
             </GuestOnlyRoute>
         )
     },
@@ -16,16 +16,16 @@ const router = createBrowserRouter([
         path: '/signup',
         element: (
             <GuestOnlyRoute>
-                <pages.RegisterPage />
+               <pages.LandingPage />
             </GuestOnlyRoute>
         )
     },
     {
         path: '/',
         element: (
-            <ProtectedRoute>
-                <pages.LoginPage />
-            </ProtectedRoute>
+            <GuestOnlyRoute>
+                <pages.LandingPage /> 
+            </GuestOnlyRoute>
         ),
     },
     {
