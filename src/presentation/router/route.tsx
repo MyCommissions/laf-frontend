@@ -1,9 +1,9 @@
-import LoginPage from "../pages/auth/LoginPage";
 import NotFoundPage from "../pages/NotFoundPage";
-import RegisterPage from "../pages/auth/RegisterPage";
+
+import LandingPage from "../pages/LandingPage";
 
 export const pages = {
-    LoginPage,
-    NotFoundPage,
-    RegisterPage,
-}
+  NotFoundPage,
+
+  LandingPage,
+};
