@@ -8,7 +8,7 @@ const router = createBrowserRouter([
         path: '/signin',
         element: (
             <GuestOnlyRoute>
-                <></>
+                <pages.LoginPage />
             </GuestOnlyRoute>
         )
     },
