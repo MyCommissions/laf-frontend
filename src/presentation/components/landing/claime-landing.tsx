@@ -1,5 +1,6 @@
 "use client"
 
+import { Link } from "react-router-dom"
 import { Button } from "../ui/button"
 import { Hand } from "lucide-react"
 
@@ -24,10 +25,6 @@ export default function ClaimeLanding() {
    * In a real application, this would navigate to the next step
    * or trigger the claiming process
    */
-  const handleProceed = () => {
-    console.log("Proceeding to claim process...")
-    // Add your navigation or API call logic here
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -50,13 +47,13 @@ export default function ClaimeLanding() {
 
         {/* Call to Action Button */}
         <div className="pt-4">
-          <Button
-            onClick={handleProceed}
+          <Link
+            to="/signin"
             className="bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-full text-base font-medium transition-colors duration-200 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
             aria-label="Proceed to start claiming process"
           >
             Proceed
-          </Button>
+          </Link>
         </div>
       </div>
     </div>

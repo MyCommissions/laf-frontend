@@ -12,12 +12,21 @@ const router = createBrowserRouter([
             </GuestOnlyRoute>
         )
     },
+    
     {
         path: '/signup',
         element: (
             <GuestOnlyRoute>
-               <pages.LandingPage />
+                <></>
             </GuestOnlyRoute>
+        )
+    },
+    {
+        path: '/dashboard',
+        element: (
+            <ProtectedRoute>
+                <></>
+            </ProtectedRoute>
         )
     },
     {
