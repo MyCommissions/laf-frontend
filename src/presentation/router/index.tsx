@@ -22,11 +22,11 @@ const router = createBrowserRouter([
         )
     },
     {
-        path: '/dashboard',
+        path: '/Home',
         element: (
-            <ProtectedRoute>
-                <></>
-            </ProtectedRoute>
+            <GuestOnlyRoute>
+                <pages.HomePage/>
+            </GuestOnlyRoute>
         )
     },
     {
