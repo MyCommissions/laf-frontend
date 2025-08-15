@@ -1,8 +1,9 @@
 "use client"
-
 import { Link } from "react-router-dom"
-import { Button } from "../ui/button"
-import { Hand } from "lucide-react"
+import logo from "../../../../public/hand.png"
+
+
+import React from "react"
 
 /**
  * ClaiMe Landing Page Component
@@ -31,8 +32,12 @@ export default function ClaimeLanding() {
       <div className="max-w-md w-full text-center space-y-8">
         {/* Logo/Icon Section */}
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center">
-            <Hand className="w-8 h-8 text-white" aria-label="ClaiMe logo - hand icon" />
+          <div>
+            <img
+              alt="logo"
+              src="/hand.png"
+              className="w-100 h-100 flex items-center justify-center"
+            ></img>
           </div>
         </div>
 
