@@ -1,37 +1,20 @@
 import React from "react";
 
-type CardProps = {
-  title: string;
-  description?: string;
-  icon?: React.ReactNode;
-  href?: string;
-  className?: string;
-};
-
-const Card: React.FC<CardProps> = ({ title, description, icon, href, className = "" }) => {
-  const content = (
-    <div
-      className={`flex flex-col items-start gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
-    >
-      {icon && (
-        <div className="text-indigo-600">
-          {icon}
-        </div>
-      )}
-      <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-      {description && <p className="text-sm text-gray-600">{description}</p>}
+// Card component with styling to match the image
+// It accepts title, description, and an icon prop
+// The props are now typed to fix the TypeScript error
+const Card = ({ title, description, icon }: { title: string; description: string; icon: React.ReactNode }) => {
+  return (
+    <div className="relative w-72 h-48 bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center justify-center text-center">
+      {/* Absolute positioned circle for the icon */}
+      <div className="absolute top-0 -translate-y-1/2 bg-black w-16 h-16 rounded-full flex items-center justify-center text-white">
+        {icon}
+      </div>
+      <h2 className="mt-4 text-2xl font-bold text-black">{title}</h2>
+      <p className="mt-2 text-sm text-gray-500">{description}</p>
     </div>
   );
-
-  if (href) {
-    return (
-      <a href={href} className="block hover:no-underline">
-        {content}
-      </a>
-    );
-  }
-
-  return content;
 };
+
 
 export default Card;
