@@ -29,7 +29,7 @@ const FoundCard: React.FC<LostItemCardProps> = ({ itemName, id, time, descriptio
   return (
     <div className="flex justify-center p-4">
       {/* The main card container */}
-      <div className="bg-white rounded-3xl shadow-lg p-6 w-80 font-serif">
+      <div className="bg-white rounded-3xl shadow-lg border-2 border-gray-900 p-6 w-80 font-serif">
         {/* Header section with item name and live date */}
         <div className="flex justify-between items-center mb-4 text-gray-800">
           <span className="text-lg font-semibold">{itemName}</span>
