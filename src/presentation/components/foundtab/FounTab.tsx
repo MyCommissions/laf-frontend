@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
+import FoundCard from '../ui/FoundCard';
 
 const categories: string[] = ['Category', 'Umbrella', 'Wallet', 'Keys', 'Phone'];
 
@@ -66,7 +67,12 @@ const LostFoundPage: React.FC = () => {
         {/* Placeholder for the found items list */}
         <h2 className="text-2xl font-semibold mb-4">Found Items</h2>
         <div className="text-center text-gray-500 py-10">
-          No found items to display yet.
+          <FoundCard
+          itemName='Umbrella'
+          id='01'
+          time='2:30pm'
+          description='nawala nako siya sa canteen, nabilin'
+          />
         </div>
       </div>
     </div>
