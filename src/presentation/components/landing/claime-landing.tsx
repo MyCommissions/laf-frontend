@@ -1,9 +1,5 @@
 "use client"
 import { Link } from "react-router-dom"
-import logo from "../../../../public/hand.png"
-
-
-import React from "react"
 
 /**
  * ClaiMe Landing Page Component
@@ -29,6 +25,7 @@ export default function ClaimeLanding() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      
       <div className="max-w-md w-full text-center space-y-8">
         {/* Logo/Icon Section */}
         <div className="flex justify-center">
@@ -61,6 +58,7 @@ export default function ClaimeLanding() {
           </Link>
         </div>
       </div>
+
     </div>
   )
 }
