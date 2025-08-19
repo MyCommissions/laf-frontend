@@ -14,10 +14,10 @@ const router = createBrowserRouter([
     },
     
     {
-        path: '/signup',
+        path: '/found',
         element: (
             <GuestOnlyRoute>
-                <></>
+                <pages.FoundPage/>
             </GuestOnlyRoute>
         )
     },
