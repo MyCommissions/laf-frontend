@@ -22,7 +22,7 @@ const router = createBrowserRouter([
         )
     },
     {
-        path: '/Home',
+        path: '/home',
         element: (
             <GuestOnlyRoute>
                 <pages.HomePage/>
