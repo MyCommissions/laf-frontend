@@ -4,7 +4,7 @@ import FoundCard from '../ui/FoundCard';
 
 const categories: string[] = ['Category', 'Umbrella', 'Wallet', 'Keys', 'Phone'];
 
-const FoundTab: React.FC = () => {
+const LostTab: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('Category');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -68,10 +68,10 @@ const FoundTab: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Found Items</h2>
         <div className="text-center text-gray-500 py-10">
           <FoundCard
-          itemName='Umbrella'
+          itemName='School ID'
           id='01'
           time='2:30pm'
-          description='Nakita nako siya sa cafet'
+          description='Nawala nako siya sa CITC building'
           />
         </div>
       </div>
@@ -79,4 +79,4 @@ const FoundTab: React.FC = () => {
   );
 };
 
-export default FoundTab;
+export default LostTab;
