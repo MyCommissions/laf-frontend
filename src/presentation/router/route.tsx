@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage";
 import FoundPage from "../pages/FoundPage";
 import LostPage from "../pages/LostPage";
 import LandingPage from "../pages/LandingPage";
+import ContactPage from "../pages/ContactPage";
 
 export const pages = {
   NotFoundPage,
@@ -12,4 +13,5 @@ export const pages = {
   FoundPage,
   LostPage,
   LandingPage,
+  ContactPage,
 };

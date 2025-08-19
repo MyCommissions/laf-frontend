@@ -39,6 +39,16 @@ const router = createBrowserRouter([
             </GuestOnlyRoute>
         )
     },
+
+    {
+        path: '/contact',
+        element: (
+            <GuestOnlyRoute>
+                <pages.ContactPage/>
+            </GuestOnlyRoute>
+        )
+    },
+
     {
         path: '/',
         element: (
@@ -47,6 +57,7 @@ const router = createBrowserRouter([
             </GuestOnlyRoute>
         ),
     },
+
     {
         path: '/*',
         element: <pages.NotFoundPage />,
