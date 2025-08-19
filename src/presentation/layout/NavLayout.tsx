@@ -40,7 +40,8 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
           className="mx-auto flex max-w-7xl items-center justify-abetween px-4 py-6 sm:px-6 lg:px-8"
         >
           <div className="flex lg:flex-1">
-            
+            <a href="#" className="-m-1.5 p-1.5">
+              <span className="sr-only"></span>
               <img
                 alt="ClaiMe logo"
                 src="/hand.png"
@@ -51,7 +52,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
             </a>
             
           </div>
-    
+        
           <PopoverGroup className="hidden lg:flex lg:gap-x-12">
             <a href="#" className="text-sm font-semibold text-black">
               Home
