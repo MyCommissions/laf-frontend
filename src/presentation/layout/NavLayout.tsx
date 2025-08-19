@@ -47,9 +47,12 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
                 src="/hand.png"
                 className="h-8 w-auto max-w-[120px]"
               />
+              <a href="#" className="text-sm font-semibold text-black mt-2">
+              ClaiMe
             </a>
+            
           </div>
-
+        
           <PopoverGroup className="hidden lg:flex lg:gap-x-12">
             <a href="#" className="text-sm font-semibold text-black">
               Home
