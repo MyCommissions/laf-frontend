@@ -68,10 +68,7 @@ const LostTab: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Found Items</h2>
         <div className="text-center text-gray-500 py-10">
           <FoundCard
-          itemName='School ID'
-          id='01'
-          time='2:30pm'
-          description='Nawala nako siya sa CITC building'
+          
           />
         </div>
       </div>
