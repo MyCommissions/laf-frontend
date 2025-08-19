@@ -1,5 +1,5 @@
 import React from "react";
-import FoundTab from "../components/foundtab/FounTab";
+import FoundTab from "../components/foundtab/FoundTab";
 
 export default function FoundLayout() {
     return(
