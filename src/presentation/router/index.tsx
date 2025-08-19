@@ -21,6 +21,16 @@ const router = createBrowserRouter([
             </GuestOnlyRoute>
         )
     },
+
+    {
+        path: '/lost',
+        element: (
+            <GuestOnlyRoute>
+                <pages.LostPage/>
+            </GuestOnlyRoute>
+        )
+    },
+
     {
         path: '/home',
         element: (
