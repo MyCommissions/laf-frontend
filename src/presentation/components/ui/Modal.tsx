@@ -1,17 +1,25 @@
-import { useDisclosure } from '@mantine/hooks';
-import { Modal, Button } from '@mantine/core';
+// src/presentation/ui/Modal.tsx
+import { useDisclosure } from "@mantine/hooks";
+import { Modal as MantineModal, Button } from "@mantine/core";
+import { ReactNode } from "react";
 
-function Demo() {
+type ModalProps = {
+  buttonLabel: string;
+  title: string;
+  children: ReactNode;
+};
+
+export function Modal({ buttonLabel, title, children }: ModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
     <>
-      <Modal opened={opened} onClose={close} title="Authentication">
-        {/* Modal content */}
-      </Modal>
+      <MantineModal opened={opened} onClose={close} title={title}>
+        {children}
+      </MantineModal>
 
       <Button variant="default" onClick={open}>
-        Open modal
+        {buttonLabel}
       </Button>
     </>
   );
