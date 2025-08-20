@@ -1,18 +1,40 @@
-import React, { useState } from 'react';
-import { ChevronDown, Search } from 'lucide-react';
-import FoundCard from '../ui/FoundCard';
+import React, { useState } from "react";
+import { ChevronDown, Search } from "lucide-react";
+import FoundCard from "../foundcard/FoundCard";
 
-const categories: string[] = ['Category', 'Umbrella', 'Wallet', 'Keys', 'Phone'];
+import ClaimModal from "../claimmodal/ClaimModal";
+
+const categories: string[] = [
+  "Category",
+  "Umbrella",
+  "Wallet",
+  "Keys",
+  "Phone",
+];
+
+
 
 const FoundTab: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('Category');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>("Category");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       {/* Header section with shadow and rounded corners */}
       <div className="bg-white p-6 shadow-md rounded-lg mb-8">
-        <h1 className="text-4xl font-serif font-bold text-gray-800 mb-6">Lost & Found items</h1>
+        <h1 className="text-4xl font-serif font-bold text-gray-800 mb-6">
+          Lost & Found items
+        </h1>
 
         {/* Flex container for the controls */}
         <div className="flex items-center space-x-4">
@@ -68,11 +90,15 @@ const FoundTab: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Found Items</h2>
         <div className="text-center text-gray-500 py-10">
           <FoundCard
-          itemName='Umbrella'
-          id='01'
-          time='2:30pm'
-          description='Nakita nako siya sa cafet'
+            itemName="Wallet"
+            id="001"
+            time="2:30 PM"
+            description="Nakita dapit sa cafet"
+            onClaimClick={handleOpenModal}
           />
+
+          {/* Conditionally render the modal */}
+          {isModalOpen && <ClaimModal onClose={handleCloseModal} />}
         </div>
       </div>
     </div>
