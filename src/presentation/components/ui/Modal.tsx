@@ -1,18 +1,51 @@
-import { useDisclosure } from '@mantine/hooks';
-import { Modal, Button } from '@mantine/core';
+import { ReactNode } from "react";
+import { Modal as MantineModal, Button } from "@mantine/core";
 
-function Demo() {
-  const [opened, { open, close }] = useDisclosure(false);
+type ModalProps = {
+  opened: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  withCloseButton?: boolean;
+  className?: string; // ✅ allow passing className
+};
 
+export function Modal({
+  opened,
+  onClose,
+  title,
+  children,
+  withCloseButton = true,
+  className,
+}: ModalProps) {
   return (
-    <>
-      <Modal opened={opened} onClose={close} title="Authentication">
-        {/* Modal content */}
-      </Modal>
+    <MantineModal
+      opened={opened}
+      onClose={onClose}
+      title={title}
+      withCloseButton={withCloseButton}
+      centered
+      className={className} // ✅ apply className
+    >
+      {children}
+    </MantineModal>
+  );
+}
 
-      <Button variant="default" onClick={open}>
-        Open modal
-      </Button>
-    </>
+type ModalTriggerButtonProps = {
+  label: string;
+  onClick: () => void;
+  className?: string; // ✅ allow className for button
+};
+
+export function ModalTriggerButton({
+  label,
+  onClick,
+  className,
+}: ModalTriggerButtonProps) {
+  return (
+    <Button onClick={onClick} className={className}>
+      {label}
+    </Button>
   );
 }
