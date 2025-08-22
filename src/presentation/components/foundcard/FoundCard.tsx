@@ -110,9 +110,9 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
         {/* Modal Body */}
         <div className="p-6 bg-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-md md:col-span-1">
+            <div className="flex flex-col items-center p-2 bg-white rounded-lg shadow-md md:col-span-1">
               <h3 className="font-semibold text-lg mb-4">Client Picture</h3>
-              <div className="relative w-full h-48 border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center">
+              <div className="relative w-full h-32 border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center">
                 {image ? (
                   <img src={image || "https://placehold.co/300x200/E5E7EB/4B5563?text=No+Image"} alt="Client Photo" className="w-full h-full object-cover" />
                 ) : (
