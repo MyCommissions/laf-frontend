@@ -103,7 +103,7 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
         {/* Modal Header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-300">
           <h2 className="text-xl font-bold">Claim Information Form</h2>
-          <button onClick={onClose} className="text-gray-700 hover:bg-gray-400 p-3 rounded-full text-4xl font-bold transition-colors">
+          <button onClick={onClose} className="bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full text-xl font-bold transition-colors">
             &times;
           </button>
         </div>
@@ -210,7 +210,7 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
 };
 
 // The QuickCheckModal component
-const QuickCheckModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+const QuickCheckModal: React.FC<{ onClose: () => void; onSuccess: () => void }> = ({ onClose, onSuccess }) => {
   const [pin, setPin] = useState('');
 
   // Function to handle the final claim action
@@ -218,8 +218,7 @@ const QuickCheckModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     // Here you would add the logic to verify the PIN
     // For now, it will just close the modal and show a success message
     onClose();
-    // In a real application, replace this alert with a custom modal or message box.
-    alert('Item claimed successfully! The guard has been notified.');
+    onSuccess();
   };
 
   return (
@@ -229,7 +228,7 @@ const QuickCheckModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <h2 className="text-2xl font-bold">Quick Check</h2>
           <button
             onClick={onClose}
-            className="text-gray-700 hover:bg-gray-400 p-3 rounded-full text-4xl font-bold transition-colors"
+            className="bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full text-xl font-bold transition-colors"
           >
             &times;
           </button>
@@ -261,10 +260,40 @@ const QuickCheckModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
+// The new SuccessModal component for the "Thank You" message
+const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-8 text-center">
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={onClose}
+            className="text-gray-700 hover:bg-gray-200 p-2 rounded-full text-xl font-bold transition-colors"
+          >
+            &times;
+          </button>
+        </div>
+        <h2 className="text-2xl font-bold mb-4">Thank You!</h2>
+        <p className="text-gray-700 mb-8">
+          Your claim has been successfully processed. The item is now marked
+          as returned in the system.
+        </p>
+        <button
+          onClick={onClose}
+          className="w-full bg-black text-white py-3 rounded-full font-bold shadow-md hover:bg-gray-800 transition-colors"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Main App component to render both the card and the modal
 const App: React.FC = () => {
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
-  const [isQuickCheckModalOpen, setIsQuickCheckModal] = useState(false);
+  const [isQuickCheckModalOpen, setIsQuickCheckModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   // Function to open the Claim modal
   const handleOpenClaimModal = () => {
@@ -278,12 +307,22 @@ const App: React.FC = () => {
 
   // Function to open the Quick Check modal
   const handleOpenQuickCheckModal = () => {
-    setIsQuickCheckModal(true);
+    setIsQuickCheckModalOpen(true);
   };
 
   // Function to close the Quick Check modal
   const handleCloseQuickCheckModal = () => {
-    setIsQuickCheckModal(false);
+    setIsQuickCheckModalOpen(false);
+  };
+
+  // Function to open the Success modal
+  const handleOpenSuccessModal = () => {
+    setIsSuccessModalOpen(true);
+  };
+
+  // Function to close the Success modal
+  const handleCloseSuccessModal = () => {
+    setIsSuccessModalOpen(false);
   };
 
   return (
@@ -305,7 +344,13 @@ const App: React.FC = () => {
         />
       )}
       {isQuickCheckModalOpen && (
-        <QuickCheckModal onClose={handleCloseQuickCheckModal} />
+        <QuickCheckModal
+          onClose={handleCloseQuickCheckModal}
+          onSuccess={handleOpenSuccessModal}
+        />
+      )}
+      {isSuccessModalOpen && (
+        <SuccessModal onClose={handleCloseSuccessModal} />
       )}
     </div>
   );
