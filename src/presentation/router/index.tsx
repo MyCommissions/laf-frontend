@@ -49,6 +49,15 @@ const router = createBrowserRouter([
         )
     },
 
+     {
+        path: '/about',
+        element: (
+            <GuestOnlyRoute>
+                <pages.AboutUsPage/>
+            </GuestOnlyRoute>
+        )
+    },
+
     {
         path: '/',
         element: (
