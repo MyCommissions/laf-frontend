@@ -1,29 +1,7 @@
 "use client"
 
-
-import { Hand } from "lucide-react"
-
-/**
- * ClaiMe Landing Page Component
- *
- * A minimalist landing page for the ClaiMe service that helps users
- * claim what belongs to them in a fast, easy, and secure manner.
- *
- * Features:
- * - Responsive design that works on all screen sizes
- * - Clean, professional typography
- * - Accessible button with hover states
- * - Semantic HTML structure
- * - TypeScript for type safety
- *
- * @returns JSX.Element - The complete landing page
- */
 export default function LoginComponent() {
-  /**
-   * Handles the proceed button click
-   * In a real application, this would navigate to the next step
-   * or trigger the claiming process
-   */
+  
   const handleProceed = () => {
     console.log("Proceeding to claim process...")
     // Add your navigation or API call logic here
