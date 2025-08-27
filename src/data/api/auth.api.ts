@@ -8,8 +8,6 @@ import {
 
 const BASE_URL = process.env.REACT_APP_API_URL;
 
-console.log(BASE_URL)
-
 export const loginUser = async (credentials: LoginRequest): Promise<LoginResponse> => {
   try {
     const response = await axios.post<LoginResponse>(

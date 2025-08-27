@@ -16,45 +16,45 @@ const router = createBrowserRouter([
     {
         path: '/found',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.FoundPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 
     {
         path: '/lost',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.LostPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 
     {
         path: '/home',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.HomePage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 
     {
         path: '/contact',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.ContactPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 
      {
         path: '/about',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.AboutUsPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 

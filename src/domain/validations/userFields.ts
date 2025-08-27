@@ -9,6 +9,5 @@ export const emailField = z
 
 export const passwordField = z
   .string()
-  .min(8, "Password must be at least 8 characters");
 
 export const rememberMeField = z.boolean().optional().default(false);

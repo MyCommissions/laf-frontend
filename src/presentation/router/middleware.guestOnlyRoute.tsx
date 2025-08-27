@@ -8,7 +8,7 @@ const GuestOnlyRoute = ({ children }: Props) => {
   const token = localStorage.getItem("token");
 
   if (token) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return <>{children}</>;
