@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import FoundCard from "../foundcard/FoundCard";
 
-import ClaimModal from "../claimmodal/ClaimModal";
+
+
+import PostFoundModal from "../postmodal/PostFoundModal";
+
+import PostLostModal from "../postmodal/PostLostModal";
+
 
 const categories: string[] = [
   "Category",
@@ -18,16 +23,9 @@ const FoundTab: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Category");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPostOpen, setIsPostOpen] = useState(false);
+  const [isLostOpen, setIsLostOpen] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  // Function to close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       {/* Header section with shadow and rounded corners */}
@@ -72,14 +70,48 @@ const FoundTab: React.FC = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
+
+
+
+
+
+          {/* Action Buttons for Post Found and Lost Items */}
           <div className="flex space-x-4 w-full sm:w-auto">
-            <button className="whitespace-nowrap px-6 py-2 rounded-full border border-gray-300 bg-white text-black font-semibold shadow-md transition-all duration-200 hover:bg-gray-100">
+
+            <div>
+                <button
+            onClick={() => setIsPostOpen(true)} 
+            className="whitespace-nowrap px-6 py-2 rounded-full border border-gray-300 bg-white text-black font-semibold shadow-md transition-all duration-200 hover:bg-gray-100">
               Post Found Item
             </button>
-            <button className="whitespace-nowrap px-6 py-2 rounded-full bg-black text-white font-semibold shadow-md transition-all duration-200 hover:bg-gray-800">
+
+
+            <PostFoundModal open = {isPostOpen} onClose={()=> setIsPostOpen(false)}>
+              
+            </PostFoundModal>
+            </div>
+          
+
+            
+        
+     
+
+
+
+
+
+  
+            <button
+            onClick={() => setIsLostOpen(true)} 
+            style={{ backgroundColor: '#F80B02' }}
+            className="whitespace-nowrap px-6 py-2 rounded-full border border-gray-300 bg-white text-white font-semibold shadow-md transition-all duration-200 hover:bg-gray-100">
               Report Lost Item
             </button>
+
+
+            <PostLostModal open = {isLostOpen} onClose={()=> setIsLostOpen(false)}>
+              
+            </PostLostModal>
           </div>
         </div>
       </div>
@@ -87,13 +119,11 @@ const FoundTab: React.FC = () => {
       {/* Main content area for found items */}
       <div className="bg-white p-6 shadow-md rounded-lg">
         {/* Placeholder for the found items list */}
-        <h2 className="text-2xl font-semibold mb-4">Found Items</h2>
+       
         <div className="text-center text-gray-500 py-10">
           <FoundCard
           />
 
-          {/* Conditionally render the modal */}
-          {isModalOpen && <ClaimModal onClose={handleCloseModal} />}
         </div>
       </div>
     </div>
