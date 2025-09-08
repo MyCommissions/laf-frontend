@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 
 // Define the props for the FoundCard component
 interface LostItemCardProps {
@@ -13,18 +13,34 @@ interface LostItemCardProps {
 // A helper function to get the current date and time
 const getCurrentDateTime = () => {
   const now = new Date();
-  const optionsDate: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-  const optionsTime: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
-  const dateString = now.toLocaleDateString('en-US', optionsDate);
-  const timeString = now.toLocaleTimeString('en-US', optionsTime);
+  const optionsDate: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  };
+  const optionsTime: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  };
+  const dateString = now.toLocaleDateString("en-US", optionsDate);
+  const timeString = now.toLocaleTimeString("en-US", optionsTime);
   return { date: dateString, time: timeString };
 };
 
 // The FoundCard component
-const FoundCard: React.FC<LostItemCardProps> = ({ itemName, id, time, description, imageSrc, onClaimClick }) => {
+const FoundCard: React.FC<LostItemCardProps> = ({
+  itemName,
+  id,
+  time,
+  description,
+  imageSrc,
+  onClaimClick,
+}) => {
   const [imgSrc, setImgSrc] = React.useState(imageSrc);
   const { date: liveDate } = getCurrentDateTime();
-  const finalImageSrc = imgSrc || 'https://placehold.co/300x200/E5E7EB/4B5563?text=No+Image';
+  const finalImageSrc =
+    imgSrc || "https://placehold.co/300x200/E5E7EB/4B5563?text=No+Image";
 
   return (
     <div className="flex justify-center p-4">
@@ -38,7 +54,11 @@ const FoundCard: React.FC<LostItemCardProps> = ({ itemName, id, time, descriptio
             src={finalImageSrc}
             alt={itemName}
             className="rounded-lg w-full max-w-xs object-cover"
-            onError={() => setImgSrc('https://placehold.co/300x200/E5E7EB/4B5563?text=Image+Not+Found')}
+            onError={() =>
+              setImgSrc(
+                "https://placehold.co/300x200/E5E7EB/4B5563?text=Image+Not+Found"
+              )
+            }
           />
         </div>
         <div className="flex justify-between items-center mb-2">
@@ -103,7 +123,10 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
         {/* Modal Header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-300">
           <h2 className="text-xl font-bold">Claim Information Form</h2>
-          <button onClick={onClose} className="bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full text-xl font-bold transition-colors">
+          <button
+            onClick={onClose}
+            className="bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full text-xl font-bold transition-colors"
+          >
             &times;
           </button>
         </div>
@@ -114,7 +137,14 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
               <h3 className="font-semibold text-lg mb-4">Client Picture</h3>
               <div className="relative w-full h-32 border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center">
                 {image ? (
-                  <img src={image || "https://placehold.co/300x200/E5E7EB/4B5563?text=No+Image"} alt="Client Photo" className="w-full h-full object-cover" />
+                  <img
+                    src={
+                      image ||
+                      "https://placehold.co/300x200/E5E7EB/4B5563?text=No+Image"
+                    }
+                    alt="Client Photo"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400 text-center">
                     <p>No image uploaded</p>
@@ -139,7 +169,9 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
             </div>
             <div className="flex flex-col space-y-4 md:col-span-1 mt-9">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Item #</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Item #
+                </label>
                 <input
                   type="text"
                   placeholder="01"
@@ -148,7 +180,9 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contact Number
+                </label>
                 <input
                   type="text"
                   placeholder="Write Something"
@@ -159,7 +193,9 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First Name
+              </label>
               <input
                 type="text"
                 placeholder="Write Something"
@@ -167,7 +203,9 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name
+              </label>
               <input
                 type="text"
                 placeholder="Write Something"
@@ -177,7 +215,9 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-8">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Time
+              </label>
               <input
                 type="text"
                 placeholder="5:06PM"
@@ -186,7 +226,9 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date
+              </label>
               <input
                 type="text"
                 placeholder="08/16/2025"
@@ -210,8 +252,11 @@ const ClaimModal: React.FC<ClaimModalProps> = ({ onClose, onNext }) => {
 };
 
 // The QuickCheckModal component
-const QuickCheckModal: React.FC<{ onClose: () => void; onSuccess: () => void }> = ({ onClose, onSuccess }) => {
-  const [pin, setPin] = useState('');
+const QuickCheckModal: React.FC<{
+  onClose: () => void;
+  onSuccess: () => void;
+}> = ({ onClose, onSuccess }) => {
+  const [pin, setPin] = useState("");
 
   // Function to handle the final claim action
   const handleClaim = () => {
@@ -234,8 +279,8 @@ const QuickCheckModal: React.FC<{ onClose: () => void; onSuccess: () => void }> 
           </button>
         </div>
         <p className="text-center text-gray-700 mb-8">
-          The guard will ask simple questions to confirm the item is yours. Please answer
-          carefully. This step ensures proper claiming.
+          The guard will ask simple questions to confirm the item is yours.
+          Please answer carefully. This step ensures proper claiming.
         </p>
         <div className="text-center mb-6">
           <h3 className="text-xl font-semibold mb-4">Guard PIN</h3>
@@ -275,8 +320,8 @@ const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         </div>
         <h2 className="text-2xl font-bold mb-4">Thank You!</h2>
         <p className="text-gray-700 mb-8">
-          Your claim has been successfully processed. The item is now marked
-          as returned in the system.
+          Your claim has been successfully processed. The item is now marked as
+          returned in the system.
         </p>
         <button
           onClick={onClose}
@@ -349,9 +394,7 @@ const App: React.FC = () => {
           onSuccess={handleOpenSuccessModal}
         />
       )}
-      {isSuccessModalOpen && (
-        <SuccessModal onClose={handleCloseSuccessModal} />
-      )}
+      {isSuccessModalOpen && <SuccessModal onClose={handleCloseSuccessModal} />}
     </div>
   );
 };
