@@ -22,14 +22,7 @@ const router = createBrowserRouter([
         )
     },
 
-    {
-        path: '/lost',
-        element: (
-            <ProtectedRoute>
-                <pages.LostPage/>
-            </ProtectedRoute>
-        )
-    },
+
 
     {
         path: '/home',

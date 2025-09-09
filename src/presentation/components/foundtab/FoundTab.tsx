@@ -102,7 +102,7 @@ const FoundTab: React.FC = () => {
         {/* Placeholder for the found items list */}
 
         <div className="text-center text-gray-500 py-10">
-          <FoundCard />
+          //add the found card here
         </div>
       </div>
     </div>
