@@ -1,6 +1,8 @@
 import React, { useState, useRef, ReactNode } from "react";
 import { ChevronDown, Search, Camera, PlusCircle } from "lucide-react";
 
+import FoundModal from "../thankyoumodal/FoundModal";
+
 const categories: string[] = [
   "Select Category",
   "Umbrella",
@@ -35,6 +37,8 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
   const [selectedCategory, setSelectedCategory] = useState("Select Category");
   const [selectedColor, setSelectedColor] = useState("Select Color");
   const [selectedSize, setSelectedSize] = useState("Select Item Size");
+
+  const [isFoundModalOpen, setIsFoundModalOpen] = useState(false);
 
   if (!open) {
     return null;
@@ -101,7 +105,7 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
                 ref={fileInputRef}
                 style={{ display: "none" }}
               />
-   <div className="relative">
+              <div className="relative">
                 <label className="block text-gray-700 font-semibold mb-3">
                   Category
                 </label>
@@ -167,10 +171,11 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
                       key={itemSizes}
                       value={itemSizes}
                       disabled={index === 0}
-                      hidden={index === 0 && selectedSize !== "Select Item Size"
+                      hidden={
+                        index === 0 && selectedSize !== "Select Item Size"
                       }
                     >
-                        {itemSizes}
+                      {itemSizes}
                     </option>
                   ))}
                 </select>
@@ -270,8 +275,6 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
                   />
                 </div>
 
-                
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Amount Money
@@ -307,11 +310,16 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
 
                 <div className="pt-5">
                   <button
-  style={{ backgroundColor: '#01C629' }}
-  className="text-white w-full p-12 mt-1 rounded-lg font-bold shadow-md transition-colors hover:opacity-90 text-4xl"
->
-  POST
-</button>
+                    onClick={() => setIsFoundModalOpen(true)}
+                    style={{ backgroundColor: "#01C629" }}
+                    className="text-white w-full p-12 mt-1 rounded-lg font-bold shadow-md transition-colors hover:opacity-90 text-4xl"
+                  >
+                    POST
+                  </button>
+                  <FoundModal
+                    open={isFoundModalOpen}
+                    onClose={() => setIsFoundModalOpen(false)}
+                  ></FoundModal>
                 </div>
               </div>
             </div>

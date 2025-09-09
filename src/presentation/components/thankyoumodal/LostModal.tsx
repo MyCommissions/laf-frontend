@@ -1,4 +1,18 @@
-const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+import React, { useState, useRef, ReactNode } from "react";
+
+
+interface LostModal {
+  open: boolean;
+  onClose: () => void;
+  children?: ReactNode;
+}
+
+
+const LostModal= ({open, onClose, children}:LostModal) => {
+  if (!open) {
+    return null;
+  }
+  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-8 text-center">
@@ -10,10 +24,9 @@ const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             &times;
           </button>
         </div>
-        <h2 className="text-2xl font-bold mb-4">Thank You!</h2>
+        <h2 className="text-2xl font-bold mb-4">Report Submitted!</h2>
         <p className="text-gray-700 mb-8">
-          Your claim has been successfully processed. The item is now marked as
-          returned in the system.
+          Your lost item has been saved. We’ll email you if a match is found. Thank you!
         </p>
         <button
           onClick={onClose}
@@ -25,3 +38,5 @@ const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </div>
   );
 };
+
+export default LostModal;
