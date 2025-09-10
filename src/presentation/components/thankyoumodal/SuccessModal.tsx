@@ -1,4 +1,18 @@
-const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+import React, { useState, useRef, ReactNode } from "react";
+
+
+interface SuccessModal {
+  open: boolean;
+  onClose: () => void;
+  children?: ReactNode;
+}
+
+
+const SuccessModal= ({open, onClose, children}:SuccessModal) => {
+  if (!open) {
+    return null;
+  }
+  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-8 text-center">
@@ -12,7 +26,7 @@ const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         </div>
         <h2 className="text-2xl font-bold mb-4">Thank You!</h2>
         <p className="text-gray-700 mb-8">
-          Your claim has been successfully processed. The item is now marked as
+           Your claim has been successfully processed. The item is now marked as
           returned in the system.
         </p>
         <button
@@ -25,3 +39,5 @@ const SuccessModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </div>
   );
 };
+
+export default SuccessModal;

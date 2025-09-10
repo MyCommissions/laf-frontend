@@ -1,6 +1,8 @@
 import React, { useState, useRef, ReactNode } from "react";
 import { ChevronDown, Search, Camera, PlusCircle } from "lucide-react";
 
+import LostModal from "../thankyoumodal/LostModal";
+
 const categories: string[] = [
   "Select Category",
   "Umbrella",
@@ -35,6 +37,8 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
   const [selectedCategory, setSelectedCategory] = useState("Select Category");
   const [selectedColor, setSelectedColor] = useState("Select Color");
   const [selectedSize, setSelectedSize] = useState("Select Item Size");
+
+  const [isLostModalOpen, setIsLostModalOpen] = useState(false);
 
   if (!open) {
     return null;
@@ -168,10 +172,11 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
                       key={itemSizes}
                       value={itemSizes}
                       disabled={index === 0}
-                      hidden={index === 0 && selectedSize !== "Select Item Size"
+                      hidden={
+                        index === 0 && selectedSize !== "Select Item Size"
                       }
                     >
-                        {itemSizes}
+                      {itemSizes}
                     </option>
                   ))}
                 </select>
@@ -306,11 +311,17 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
 
                 <div className="pt-5">
                   <button
+                    onClick={() => setIsLostModalOpen(true)}
                     style={{ backgroundColor: "#F80B02" }}
                     className="text-white w-full p-12 mt-1 rounded-lg font-bold shadow-md transition-colors hover:opacity-90 text-4xl"
                   >
                     REPORT
                   </button>
+
+                  <LostModal
+                    open={isLostModalOpen}
+                    onClose={() => setIsLostModalOpen(false)}
+                  ></LostModal>
                 </div>
               </div>
             </div>
