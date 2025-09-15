@@ -242,7 +242,7 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
                 <input
                   type="text"
                   placeholder="5:06PM"
-                  readOnly
+                  disabled
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200"
                 />
               </div>
@@ -254,7 +254,7 @@ const PostFoundModal = ({ open, onClose, children }: PostModalProps) => {
                 <input
                   type="text"
                   placeholder="08/16/2025"
-                  readOnly
+                  disabled
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200"
                 />
               </div>

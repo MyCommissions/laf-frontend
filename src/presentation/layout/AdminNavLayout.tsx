@@ -5,11 +5,13 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const navLinks = [
   { name: "Home", href: "/home" },
-  { name: "Contact", href: "/contact-us" },
-  { name: "About", href: "/about-us" },
+  { name: "Lost", href: "/lost" },
+  { name: "Found", href: "/found" },
+  { name: "Account", href: "/account" },
+  { name: "Records", href: "/Records" },
 ];
 
-export default function NavLayout({ children }: { children: React.ReactNode }) {
+export default function AdminNavLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (

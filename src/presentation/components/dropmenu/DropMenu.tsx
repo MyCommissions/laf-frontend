@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
+const categories: string[] = [
+  "Category",
+  "Umbrella",
+  "Wallet",
+  "Keys",
+  "Phone",
+];
 
 const DropdownMenu = () => {
-  const [selectedOption, setSelectedOption] = useState<string>('Category');
-  const categories: string[] = ['Category', 'Umbrella', 'Wallet', 'Keys', 'Phone'];
+  const [selectedOption, setSelectedOption] = useState("Category");
 
   return (
     <div className="relative inline-block w-full sm:w-auto">
@@ -13,8 +20,13 @@ const DropdownMenu = () => {
         onChange={(e) => setSelectedOption(e.target.value)}
         className="w-full sm:w-auto appearance-none pr-8 pl-4 py-2 rounded-full border border-gray-300 bg-gray-100 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
       >
-        {categories.map((category) => (
-          <option key={category} value={category}>
+        {categories.map((category, index) => (
+          <option
+            key={category}
+            value={category}
+            disabled={index === 0}
+            hidden={index === 0 && selectedOption !== "Category"}
+          >
             {category}
           </option>
         ))}

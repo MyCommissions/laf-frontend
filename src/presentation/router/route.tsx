@@ -6,6 +6,8 @@ import LandingPage from "../pages/LandingPage";
 import ContactPage from "../pages/ContactPage";
 import AboutUsPage from "../pages/AboutPage";
 
+import AdminHomePage from "../pages/AdminHomePage";
+
 export const pages = {
   NotFoundPage,
   LoginPage,
@@ -14,4 +16,6 @@ export const pages = {
   LandingPage,
   ContactPage,
   AboutUsPage,
+
+  AdminHomePage,
 };
