@@ -45,18 +45,15 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
             ))}
           </div>
 
-          {/* Right Side (Desktop) */}
+          {/* Right Side (Desktop) log out button */}
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a
-              href="/signin"
-              className="text-sm font-semibold text-indigo-600 hover:text-indigo-800"
-            >
-              Log in <span aria-hidden="true">&rarr;</span>
-            </a>
+            <button className="w-24 bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
+              Log out
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex lg:hidden">
+          {/* <div className="flex lg:hidden">
             <button
               type="button"
               className="p-2 text-gray-700 hover:text-gray-900"
@@ -68,7 +65,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
                 <Bars3Icon className="h-6 w-6" />
               )}
             </button>
-          </div>
+          </div> */}
         </nav>
 
         {/* Mobile Nav */}
@@ -88,7 +85,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
                 href="/signin"
                 className="block rounded-md px-3 py-2 text-base font-semibold text-indigo-600 hover:bg-indigo-50"
               >
-                Log in →
+                Log out
               </a>
             </div>
           </div>
@@ -96,9 +93,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Page Content */}
-      <main className="flex-1 w-full overflow-auto bg-gray-50">
-        {children}
-      </main>
+      <main className="flex-1 w-full overflow-auto bg-gray-50">{children}</main>
     </div>
   );
 }
