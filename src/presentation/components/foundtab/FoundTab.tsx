@@ -102,7 +102,13 @@ const FoundTab: React.FC = () => {
         {/* Placeholder for the found items list */}
 
         <div className="text-center text-gray-500 py-10">
-          //add the found card here
+          <FoundCard
+            itemName="Umbrella"
+            id="001"
+            time="2:40pm"
+            description="Medium-sized yellow Shein umbrella"
+            onClaimClick={() => console.log(`Claimed item with id`)}
+          ></FoundCard>
         </div>
       </div>
     </div>
