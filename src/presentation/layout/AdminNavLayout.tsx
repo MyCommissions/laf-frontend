@@ -4,11 +4,11 @@ import { useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const navLinks = [
-  { name: "Home", href: "/home" },
+  { name: "Records", href: "/records" },
   { name: "Lost", href: "/lost" },
   { name: "Found", href: "/found" },
+  { name: "Claimed", href: "/claimed" },
   { name: "Account", href: "/account" },
-  { name: "Records", href: "/Records" },
 ];
 
 export default function AdminNavLayout({ children }: { children: React.ReactNode }) {
