@@ -9,7 +9,6 @@ const navLinks = [
   { name: "Found", href: "/found" },
   { name: "Claimed", href: "/claimed" },
   { name: "Account", href: "/account" },
-  
 ];
 
 export default function AdminNavLayout({ children }: { children: React.ReactNode }) {
