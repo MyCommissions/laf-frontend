@@ -21,24 +21,7 @@ interface User {
 }
 
 // Dummy data to populate the table
-const users: User[] = [
-  {
-    id: 1,
-    name: "Charlie Quipanes",
-    email: "sarpiuq@gmail.com",
-    contact: "09123456789",
-    time: "2:23 PM",
-    date: "09/17/2025",
-    category: "Wallet",
-    amount: "1,000",
-    size: "Small",
-    color: "Black",
-    brand: "Gucci",
-    uid: "C12xdg2",
-    status: "Pending",
-    imageUrl: "https://placehold.co/40x40/6366f1/ffffff?text=CQ",
-  },
-];
+//  
 
 /**
  * UserGridTable Component
@@ -48,7 +31,7 @@ const users: User[] = [
  * * @component
  * @returns {JSX.Element} The rendered UserGridTable component.
  */
-const DataTable: React.FC = () => {
+const UserGridTable: React.FC = () => {
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-6 w-full max-w-20xl mx-auto">
       {/* Table Header */}
@@ -69,7 +52,7 @@ const DataTable: React.FC = () => {
       </div>
 
       {/* Table Rows */}
-      <div className="divide-y divide-gray-700">
+      {/* <div className="divide-y divide-gray-700">
         {users.map((user) => (
           <div
             key={user.id}
@@ -115,9 +98,9 @@ const DataTable: React.FC = () => {
             
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
 
-export default DataTable;
+export default UserGridTable;

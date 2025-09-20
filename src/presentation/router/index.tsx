@@ -70,6 +70,15 @@ const router = createBrowserRouter([
     },
 
     {
+        path: '/account',
+        element: (
+            <GuestOnlyRoute>
+                <pages.AdminAccountPage /> 
+            </GuestOnlyRoute>
+        ),
+    },
+
+    {
         path: '/*',
         element: <pages.NotFoundPage />,
     },
