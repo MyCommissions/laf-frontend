@@ -36,18 +36,18 @@ const router = createBrowserRouter([
     {
         path: '/contact',
         element: (
-            <ProtectedRoute>
+            <GuestOnlyRoute>
                 <pages.ContactPage/>
-            </ProtectedRoute>
+            </GuestOnlyRoute>
         )
     },
 
      {
         path: '/about',
         element: (
-            <ProtectedRoute>
+            <GuestOnlyRoute>
                 <pages.AboutUsPage/>
-            </ProtectedRoute>
+            </GuestOnlyRoute>
         )
     },
 
@@ -65,6 +65,15 @@ const router = createBrowserRouter([
         element: (
             <GuestOnlyRoute>
                 <pages.AdminHomePage /> 
+            </GuestOnlyRoute>
+        ),
+    },
+
+    {
+        path: '/account',
+        element: (
+            <GuestOnlyRoute>
+                <pages.AdminAccountPage /> 
             </GuestOnlyRoute>
         ),
     },

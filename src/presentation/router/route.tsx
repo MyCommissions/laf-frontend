@@ -7,6 +7,7 @@ import ContactPage from "../pages/ContactPage";
 import AboutUsPage from "../pages/AboutPage";
 
 import AdminHomePage from "../pages/AdminHomePage";
+import AdminAccountPage from "../pages/AdminAccountPage";
 
 export const pages = {
   NotFoundPage,
@@ -18,4 +19,5 @@ export const pages = {
   AboutUsPage,
 
   AdminHomePage,
+  AdminAccountPage,
 };
