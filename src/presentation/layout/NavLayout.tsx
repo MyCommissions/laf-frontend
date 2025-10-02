@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useLogout } from "../../domain/hooks/useLogout";
 
 const navLinks = [
   { name: "Home", href: "/home" },
@@ -11,6 +11,7 @@ const navLinks = [
 
 export default function NavLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const logout = useLogout();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -47,25 +48,24 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
 
           {/* Right Side (Desktop) log out button */}
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <button className="w-24 bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
+            <button
+              onClick={logout} // ✅ call logout here
+              className="w-24 bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
+            >
               Log out
             </button>
           </div>
 
           {/* Mobile Menu Button */}
-          {/* <div className="flex lg:hidden">
+          <div className="flex lg:hidden">
             <button
               type="button"
               className="p-2 text-gray-700 hover:text-gray-900"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? (
-                <XMarkIcon className="h-6 w-6" />
-              ) : (
-                <Bars3Icon className="h-6 w-6" />
-              )}
+              {mobileMenuOpen ? "✕" : "☰"} {/* simple toggle icon */}
             </button>
-          </div> */}
+          </div>
         </nav>
 
         {/* Mobile Nav */}
@@ -81,12 +81,12 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
                   {link.name}
                 </a>
               ))}
-              <a
-                href="/signin"
+              <button
+                onClick={logout} // ✅ call logout here
                 className="block rounded-md px-3 py-2 text-base font-semibold text-indigo-600 hover:bg-indigo-50"
               >
                 Log out
-              </a>
+              </button>
             </div>
           </div>
         )}

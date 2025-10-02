@@ -1,11 +1,5 @@
-export const setToken = (token: string) => {
-    localStorage.setItem("token", token);
-}
-
-export const getToken = () => {
-    return localStorage.getItem("token");
-}
-
-export const clearToken = () => {
-    localStorage.removeItem("token");
-}
+// Example cleanup
+export const tokenService = {
+  // No direct get/set for JWT anymore
+  clearUser: () => sessionStorage.removeItem("user"),
+};

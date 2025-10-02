@@ -1,4 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
+import ItemDetailsModal from "./itemDetailsModal";
+import { getDisplayImageUrl } from "../../../utils/imageHelper";
 
 // Define the props for the FoundCard component
 interface LostItemCardProps {
@@ -6,11 +8,10 @@ interface LostItemCardProps {
   id: string;
   time: string;
   description: string;
-  imageSrc?: string;
-  onClaimClick: () => void; // A function to be called when the claim button is clicked
+  imageSrc?: string; // raw key from DB
+  onClaimClick: () => void;
 }
 
-// A helper function to get the current date and time
 const getCurrentDateTime = () => {
   const now = new Date();
   const optionsDate: Intl.DateTimeFormatOptions = {
@@ -28,19 +29,19 @@ const getCurrentDateTime = () => {
   return { date: dateString, time: timeString };
 };
 
-// The FoundCard component
 const FoundCard: React.FC<LostItemCardProps> = ({
-  itemName,
   id,
+  itemName,
   time,
   description,
   imageSrc,
   onClaimClick,
 }) => {
-  const [imgSrc, setImgSrc] = React.useState(imageSrc);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { date: liveDate } = getCurrentDateTime();
-  const finalImageSrc =
-    imgSrc || "https://placehold.co/300x200/E5E7EB/4B5563?text=No+Image";
+
+  // ✅ Build final image URL (or placeholder)
+  const finalImageSrc = getDisplayImageUrl(imageSrc);
 
   return (
     <div className="flex justify-center p-4">
@@ -54,11 +55,6 @@ const FoundCard: React.FC<LostItemCardProps> = ({
             src={finalImageSrc}
             alt={itemName}
             className="rounded-lg w-full max-w-xs object-cover"
-            onError={() =>
-              setImgSrc(
-                "https://placehold.co/300x200/E5E7EB/4B5563?text=Image+Not+Found"
-              )
-            }
           />
         </div>
         <div className="flex justify-between items-center mb-2">
@@ -69,19 +65,35 @@ const FoundCard: React.FC<LostItemCardProps> = ({
           <p className="text-sm text-gray-700">{description}</p>
         </div>
         <div className="text-center mb-6">
-          <a href="#" className="text-sm text-gray-500 hover:underline">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="text-sm text-gray-500 hover:underline"
+          >
             more information
-          </a>
+          </button>
         </div>
         <div className="flex justify-center">
           <button
-            onClick={onClaimClick} // Use the prop to handle the click
+            onClick={onClaimClick}
             className="w-full bg-black text-white py-3 rounded-full font-bold shadow-md hover:bg-gray-800 transition-colors"
           >
             Claim
           </button>
         </div>
       </div>
+
+      {/* Item Details Modal */}
+      <ItemDetailsModal
+        item={{
+          id,
+          itemName,
+          time,
+          description,
+          imageSrc: finalImageSrc,
+        }}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

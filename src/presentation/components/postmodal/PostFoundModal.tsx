@@ -1,88 +1,155 @@
-import React, { useState, useRef, ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
-import FoundModal from "../thankyoumodal/FoundModal";
+"use client"
 
-const categories: string[] = [
-  "Select Category",
-  "Umbrella",
-  "Wallet",
-  "Keys",
-  "Phone",
-];
+import type React from "react"
+import { useState, useRef, type ReactNode } from "react"
+import { ChevronDown } from "lucide-react"
+import FoundModal from "../thankyoumodal/FoundModal"
+import { useCreateFoundItem } from "../../../domain/hooks/useItems"
+import { CATEGORIES } from "../../../data/models/Item"
+import { useQueryClient } from "@tanstack/react-query"
 
-const colors: string[] = [
-  "Select Color",
-  "Black",
-  "Blue",
-  "Red",
-  "Green",
-  "Yellow",
-  "White",
-  "Other",
-];
+const categories: string[] = ["Select Category", ...CATEGORIES, "Keys"]
 
-const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
+const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"]
+
+const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"]
 
 interface PostModalProps {
-  open: boolean;
-  onClose: () => void;
-  children?: ReactNode;
+  open: boolean
+  onClose: () => void
+  children?: ReactNode
 }
 
 const PostFoundModal = ({ open, onClose }: PostModalProps) => {
-  const [image, setImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [selectedCategory, setSelectedCategory] = useState("Select Category");
-  const [selectedColor, setSelectedColor] = useState("Select Color");
-  const [selectedSize, setSelectedSize] = useState("Select Item Size");
+  const [selectedCategory, setSelectedCategory] = useState<string>("Select Category")
+  const [selectedColor, setSelectedColor] = useState<string>("Select Color")
+  const [selectedSize, setSelectedSize] = useState<string>("Select Item Size")
 
-  const [isFoundModalOpen, setIsFoundModalOpen] = useState(false);
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [contactNumber, setContactNumber] = useState("")
+  const [email, setEmail] = useState("")
+  const [brandType, setBrandType] = useState("")
+  const [moneyAmount, setMoneyAmount] = useState<string>("")
+  const [remarks, setRemarks] = useState("")
+  const [uniqueIdentifier, setUniqueIdentifier] = useState("")
+
+  const [isFoundModalOpen, setIsFoundModalOpen] = useState(false)
+
+  const { mutate: createFoundItem, isPending } = useCreateFoundItem();
 
   if (!open) {
-    return null;
+    return null
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      const reader = new FileReader();
+      setImageFile(file)
+      const reader = new FileReader()
       reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
-  };
+  }
 
   const handleTakePhoto = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
-  // === Disable Logic ===
+  const resetForm = () => {
+    setImageFile(null)
+    setImagePreview(null)
+    setSelectedCategory("Select Category")
+    setSelectedColor("Select Color")
+    setSelectedSize("Select Item Size")
+    setFirstName("")
+    setLastName("")
+    setContactNumber("")
+    setEmail("")
+    setBrandType("")
+    setMoneyAmount("")
+    setRemarks("")
+    setUniqueIdentifier("")
+  }
+
   const isDisabled = (field: string): boolean => {
-    // If no image uploaded → everything disabled
-    if (!image) return true;
-
-    // Category-specific rules
-    if (selectedCategory === "Umbrella") {
-      if (field === "amount" || field === "uid") return true;
-    } else if (selectedCategory === "Keys") {
-      if (field === "amount" || field === "uid" || field === "color")
-        return true;
+    if (!imageFile) return true
+    switch (selectedCategory) {
+      case "ID":
+        if (["color", "size", "amount"].includes(field)) return true
+        break
+      case "Keys":
+        if (["amount"].includes(field)) return true
+        break
+      case "Cash":
+        if (["color", "size", "uid", "brand"].includes(field)) return true
+        break
+      case "Wallet":
+        if (["size"].includes(field)) return true
+        break
+      case "Umbrella":
+        if (["amount", "uid"].includes(field)) return true
+        break
+      default:
+        break
     }
+    return false
+  }
 
-    // Default: not disabled
-    return false;
-  };
+  const handleSubmit = () => {
+    if (!imageFile) return
+
+    const formData = new FormData()
+    formData.append("image", imageFile)
+    formData.append("firstName", firstName)
+    formData.append("lastName", lastName)
+    formData.append("contactNumber", contactNumber)
+    formData.append("email", email)
+    formData.append(
+      "category",
+      selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others",
+    )
+
+    if (selectedColor && selectedColor !== "Select Color") {
+      formData.append("itemColor", selectedColor)
+    }
+    if (selectedSize && selectedSize !== "Select Item Size") {
+      formData.append("itemSize", selectedSize)
+    }
+    if (brandType) formData.append("brandType", brandType)
+    if (moneyAmount) formData.append("moneyAmount", moneyAmount)
+    if (remarks) formData.append("remarks", remarks)
+    if (uniqueIdentifier) formData.append("uniqueIdentifier", uniqueIdentifier)
+
+    formData.append("found", "true")
+    formData.append("claimed", "false")
+    formData.append("placeFound", "Campus")
+
+    createFoundItem(formData, {
+      onSuccess: () => {
+        resetForm()
+        setIsFoundModalOpen(true)
+
+        // ✅ Close FoundModal automatically after showing
+        setTimeout(() => {
+          setIsFoundModalOpen(false)
+          onClose()
+        }, 1500) // 1.5s delay so user sees "thank you" modal
+      },
+    })
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
       <div className="bg-gray-200 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden">
-        {/* Modal header */}
         <div className="flex justify-between items-center p-1 border-b border-gray-300">
-          <h2 className="flex justify-center items-center text-xl font-bold ml-5">
-            Found Item
-          </h2>
+          <h2 className="flex justify-center items-center text-xl font-bold ml-5">Found Item</h2>
           <button
             onClick={onClose}
             className="mr-3 text-gray-700 hover:bg-gray-400 p-2 rounded-full text-4xl font-bold transition-colors"
@@ -91,16 +158,14 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
           </button>
         </div>
 
-        {/* Modal body */}
         <div className="p-6 bg-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* First column */}
             <div className="md:col-span-1 space-y-4">
               <h3 className="font-semibold text-lg mb-1">Item Picture</h3>
               <div className="relative w-full h-48 border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center p-4 bg-white">
-                {image ? (
+                {imagePreview ? (
                   <img
-                    src={image}
+                    src={imagePreview || "/placeholder.svg"}
                     alt="Item Photo"
                     className="w-full h-full object-contain"
                   />
@@ -123,11 +188,8 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                 style={{ display: "none" }}
               />
 
-              {/* Category */}
               <div className="relative">
-                <label className="block text-gray-700 font-semibold mb-3">
-                  Category
-                </label>
+                <label className="block text-gray-700 font-semibold mb-3">Category</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
@@ -143,9 +205,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                       key={category}
                       value={category}
                       disabled={index === 0}
-                      hidden={
-                        index === 0 && selectedCategory !== "Select Category"
-                      }
+                      hidden={index === 0 && selectedCategory !== "Select Category"}
                     >
                       {category}
                     </option>
@@ -156,11 +216,8 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                 </div>
               </div>
 
-              {/* Item Color */}
               <div className="relative">
-                <label className="block text-gray-700 font-semibold mb-1">
-                  Item Color
-                </label>
+                <label className="block text-gray-700 font-semibold mb-1">Item Color</label>
                 <select
                   value={selectedColor}
                   onChange={(e) => setSelectedColor(e.target.value)}
@@ -187,11 +244,8 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                 </div>
               </div>
 
-              {/* Item Size */}
               <div className="relative">
-                <label className="block text-gray-700 font-semibold mb-1">
-                  Item Size
-                </label>
+                <label className="block text-gray-700 font-semibold mb-1">Item Size</label>
                 <select
                   value={selectedSize}
                   onChange={(e) => setSelectedSize(e.target.value)}
@@ -219,15 +273,14 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
             </div>
 
-            {/* Second column */}
             <div className="flex flex-col space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  First Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">First Name</label>
                 <input
                   type="text"
                   placeholder="Enter Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   disabled={isDisabled("fname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -235,12 +288,12 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
                 <input
                   type="text"
                   placeholder="Enter Last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   disabled={isDisabled("lname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -248,12 +301,12 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                 <input
                   type="text"
                   placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   disabled={isDisabled("email")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -261,12 +314,12 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Brand Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Brand Name</label>
                 <input
                   type="text"
                   placeholder="Enter Brand"
+                  value={brandType}
+                  onChange={(e) => setBrandType(e.target.value)}
                   disabled={isDisabled("brand")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -274,9 +327,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Time
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
                 <input
                   type="text"
                   placeholder="5:06PM"
@@ -287,9 +338,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                 <input
                   type="text"
                   placeholder="08/16/2025"
@@ -300,15 +349,14 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
             </div>
 
-            {/* Third column */}
             <div className="flex flex-col space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Contact No.
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">Contact No.</label>
                 <input
                   type="text"
                   placeholder="Enter phone number"
+                  value={contactNumber}
+                  onChange={(e) => setContactNumber(e.target.value)}
                   disabled={isDisabled("contact")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -316,12 +364,12 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amount Money
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Amount Money</label>
                 <input
                   type="text"
                   placeholder="Enter amount"
+                  value={moneyAmount}
+                  onChange={(e) => setMoneyAmount(e.target.value)}
                   disabled={isDisabled("amount")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -329,12 +377,12 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Unique Identifier
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Unique Identifier</label>
                 <input
                   type="text"
                   placeholder="N/A"
+                  value={uniqueIdentifier}
+                  onChange={(e) => setUniqueIdentifier(e.target.value)}
                   disabled={isDisabled("uid")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -342,12 +390,12 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Remarks
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
                 <input
                   type="text"
                   placeholder="Enter Remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
                   disabled={isDisabled("remarks")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 
                              disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -356,26 +404,23 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
 
               <div className="pt-5">
                 <button
-                  onClick={() => setIsFoundModalOpen(true)}
+                  onClick={handleSubmit}
                   style={{ backgroundColor: "#01C629" }}
-                  disabled={!image}
+                  disabled={!imageFile || isPending}
                   className="text-white w-full p-12 mt-1 rounded-lg font-bold shadow-md transition-colors 
-                             hover:opacity-90 text-4xl 
-                             disabled:opacity-50 disabled:cursor-not-allowed"
+                            hover:opacity-90 text-4xl 
+                            disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  POST
+                  {isPending ? "Posting..." : "POST"}
                 </button>
-                <FoundModal
-                  open={isFoundModalOpen}
-                  onClose={() => setIsFoundModalOpen(false)}
-                />
+                <FoundModal open={isFoundModalOpen} onClose={() => setIsFoundModalOpen(false)} />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PostFoundModal;
+export default PostFoundModal
