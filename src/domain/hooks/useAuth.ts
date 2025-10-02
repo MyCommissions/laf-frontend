@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { loginUserUseCase, registerUserUseCase } from "../usecases/authUseCases";
+import { login, register } from "../../data/repositories/auth.repository";
 import {
   LoginRequest,
   LoginResponse,
@@ -7,14 +7,16 @@ import {
   RegisterResponse,
 } from "../../data/models/User";
 
+// Hook for login
 export const useLogin = () => {
   return useMutation<LoginResponse, Error, LoginRequest>({
-    mutationFn: loginUserUseCase,
+    mutationFn: (credentials) => login(credentials),
   });
 };
 
+// Hook for register
 export const useRegister = () => {
-    return useMutation<RegisterResponse, Error, RegisterRequest>({
-      mutationFn: registerUserUseCase,
-    });
-}
+  return useMutation<RegisterResponse, Error, RegisterRequest>({
+    mutationFn: (userData) => register(userData),
+  });
+};
