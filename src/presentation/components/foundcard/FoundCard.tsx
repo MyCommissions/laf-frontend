@@ -45,25 +45,36 @@ const FoundCard: React.FC<LostItemCardProps> = ({
 
   return (
     <div className="flex justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-lg border-2 border-gray-900 p-6 w-80 font-serif">
+      <div className="bg-white rounded-3xl shadow-lg border-2 border-gray-900 p-6 w-80 font-serif flex flex-col h-[500px]">
+        {/* Header */}
         <div className="flex justify-between items-center mb-4 text-gray-800">
           <span className="text-lg font-semibold">{itemName}</span>
           <span className="text-sm">{liveDate}</span>
         </div>
+
+        {/* Fixed Image */}
         <div className="flex justify-center mb-4">
-          <img
-            src={finalImageSrc}
-            alt={itemName}
-            className="rounded-lg w-full max-w-xs object-cover"
-          />
+          <div className="w-full max-w-xs h-48">
+            <img
+              src={finalImageSrc}
+              alt={itemName}
+              className="w-full h-full rounded-lg object-cover"
+            />
+          </div>
         </div>
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-semibold text-gray-800">{time}</span>
-          <span className="text-sm text-gray-500">ID: {id}</span>
+
+        {/* Content should expand but not break layout */}
+        <div className="flex-grow">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-semibold text-gray-800">{time}</span>
+            <span className="text-sm text-gray-500">ID: {id}</span>
+          </div>
+          <div className="mb-4">
+            <p className="text-sm text-gray-700 line-clamp-2">{description}</p>
+          </div>
         </div>
-        <div className="mb-4">
-          <p className="text-sm text-gray-700">{description}</p>
-        </div>
+
+        {/* Footer */}
         <div className="text-center mb-6">
           <button
             onClick={() => setIsModalOpen(true)}
@@ -72,7 +83,7 @@ const FoundCard: React.FC<LostItemCardProps> = ({
             more information
           </button>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-auto">
           <button
             onClick={onClaimClick}
             className="w-full bg-black text-white py-3 rounded-full font-bold shadow-md hover:bg-gray-800 transition-colors"
