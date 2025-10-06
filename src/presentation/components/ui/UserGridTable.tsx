@@ -1,9 +1,8 @@
 import React from "react";
-
 import { Pencil } from "lucide-react";
 
-// Define the type for a single user for type safety
-interface User {
+// Define the User type (exported so you can reuse it elsewhere)
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -20,18 +19,18 @@ interface User {
   imageUrl: string;
 }
 
-// Dummy data to populate the table
-//  
+// Define component props
+interface UserGridTableProps {
+  users: User[]; // The list of users to display
+  onEdit?: (user: User) => void; // Optional callback for edit icon
+}
 
 /**
  * UserGridTable Component
- * * A React component that displays a static grid-style data table
- * with user information. The design mimics a clean, dark aesthetic
- * and uses Tailwind CSS for styling.
- * * @component
- * @returns {JSX.Element} The rendered UserGridTable component.
+ * A reusable grid-style table for displaying user information.
+ * Tailwind CSS is used for styling, preserving the original design.
  */
-const UserGridTable: React.FC = () => {
+const UserGridTable: React.FC<UserGridTableProps> = ({ users, onEdit }) => {
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-6 w-full max-w-20xl mx-auto">
       {/* Table Header */}
@@ -47,25 +46,24 @@ const UserGridTable: React.FC = () => {
         <div>Brand</div>
         <div>Unique ID</div>
         <div>Status</div>
-        {/* Edit column header is for spacing, the "Edit" text is per row */}
         <div></div>
       </div>
 
       {/* Table Rows */}
-      {/* <div className="divide-y divide-gray-700">
+      <div className="divide-y divide-gray-700">
         {users.map((user) => (
           <div
             key={user.id}
             className="grid grid-cols-12 py-4 px-6 items-center hover:bg-gray-800 transition-colors"
           >
-            <div className="col-span-2 flex items-center">
+            <div className="col-span-2 flex items-center space-x-3">
               <img
-                className="h-10 w-10 rounded-full"
+                className="h-10 w-10 rounded-full object-cover"
                 src={user.imageUrl}
-                alt=""
+                alt={user.name}
               />
-              <div className="flex-1">
-                <div className="text-sm font-medium">{user.name}</div>
+              <div>
+                <div className="text-sm font-medium text-white">{user.name}</div>
                 <div className="text-xs text-gray-400">{user.email}</div>
                 <div className="text-xs text-gray-400">{user.contact}</div>
               </div>
@@ -91,14 +89,16 @@ const UserGridTable: React.FC = () => {
               >
                 {user.status}
               </span>
-              <div className="ml-5 text-sm font-medium text-blue-400 cursor-pointer hover:underline">
+              <div
+                className="ml-5 text-sm font-medium text-blue-400 cursor-pointer hover:underline"
+                onClick={() => onEdit?.(user)}
+              >
                 <Pencil size={18} />
               </div>
             </div>
-            
           </div>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 };
