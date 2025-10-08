@@ -35,20 +35,20 @@ const router = createBrowserRouter([
     },
 
     {
-        path: '/contact',
+        path: '/contact-us',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.ContactPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 
      {
-        path: '/about',
+        path: '/about-us',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.AboutUsPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 

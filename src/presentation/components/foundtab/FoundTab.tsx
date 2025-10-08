@@ -162,7 +162,7 @@ const FoundTab: React.FC = () => {
                   <FoundCard
                     id={item._id}
                     itemName={item.category}
-                    time={new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    time={item.createdAt}
                     description={item.remarks || "No description provided"}
                     imageSrc={item.imageUrl}
                   />

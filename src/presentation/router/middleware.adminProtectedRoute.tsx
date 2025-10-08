@@ -19,9 +19,7 @@ const AdminProtectedRoute: React.FC<Props> = ({ children }) => {
     retry: false,
   });
 
-  console.log(user !== 1);
-
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div></div>;
 
   if (isError || !user || user.role !== 1) {
     return <Navigate to="/" replace />;
