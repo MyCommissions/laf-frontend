@@ -61,20 +61,20 @@ const router = createBrowserRouter([
     },
 
         {
-        path: '/admin-home',
+        path: '/admin/home',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.AdminHomePage /> 
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         ),
     },
 
     {
-        path: '/account',
+        path: '/admin/account',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.AdminAccountPage /> 
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         ),
     },
 
