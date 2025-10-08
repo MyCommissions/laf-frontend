@@ -1,21 +1,21 @@
 // src/domain/hooks/useItems.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  getItems,
   getFoundItems,
   createLostItem,
   createFoundItem,
 } from "../usecases/itemUseCases";
+import { getMatchedAndPendingItems } from "../usecases/matchedItemUseCases";
 import type {
   CreateItemRequest,
   CreateItemResponse,
   Item,
 } from "../../data/models/Item";
 
-export function useGetItems() {
+export function useGetMatchedAndPendingItems() {
   return useQuery<Item[], Error>({
     queryKey: ["items"],
-    queryFn: getItems,
+    queryFn: getMatchedAndPendingItems,
   });
 }
 

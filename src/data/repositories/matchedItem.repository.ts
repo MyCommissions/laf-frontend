@@ -1,17 +1,13 @@
-// data/repositories/matchedItem.repository.ts
+// src/data/repositories/item.repository.ts
 import {
-  getMatchedItemsApi,
-  claimMatchedItemApi,
+  getMatchedAndPendingItemsApi,
 } from "../api/matchedItem.api";
-
-import { MatchedItem } from "../models/MatchedItem";
+import type {
+  Item,
+} from "../models/Item";
 
 export const matchedItemRepository = {
-  getMatchedItems: async (): Promise<MatchedItem[]> => {
-    return await getMatchedItemsApi();
-  },
-
-  claimMatchedItem: async (id: string): Promise<MatchedItem> => {
-    return await claimMatchedItemApi(id);
+  getMatchedAndPendingItems: async (): Promise<Item[]> => {
+    return await getMatchedAndPendingItemsApi();
   },
 };

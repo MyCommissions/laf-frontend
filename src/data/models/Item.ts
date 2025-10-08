@@ -27,6 +27,8 @@ export interface Item {
   matched: boolean;
   createdAt: string;
   updatedAt: string;
+  status?: "Pending" | "Matched"; // include claimed for future use
+  type?: "lost" | "found";
 }
 
 export interface CreateItemRequest {
@@ -34,7 +36,7 @@ export interface CreateItemRequest {
   lastName: string;
   contactNumber: string;
   email: string;
-  category: "Umbrella" | "Wallet" | "Cash" | "Phone" | "ID" | "Others";
+  category: "Umbrella" | "Wallet" | "Keys" | "Phone" | "ID" | "Cash" | "Others";
   imageUrl?: string;
   moneyAmount?: number;
   itemSize?: "Small" | "Medium" | "Large";

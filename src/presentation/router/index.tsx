@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./middleware.protectedRoute";
+import AdminProtectedRoute from "./middleware.adminProtectedRoute";
 import GuestOnlyRoute from "./middleware.guestOnlyRoute";
 import { pages } from "./route";
 
@@ -63,18 +64,18 @@ const router = createBrowserRouter([
         {
         path: '/admin/home',
         element: (
-            <ProtectedRoute>
+            <AdminProtectedRoute>
                 <pages.AdminHomePage /> 
-            </ProtectedRoute>
+            </AdminProtectedRoute>
         ),
     },
 
     {
         path: '/admin/account',
         element: (
-            <ProtectedRoute>
+            <AdminProtectedRoute>
                 <pages.AdminAccountPage /> 
-            </ProtectedRoute>
+            </AdminProtectedRoute>
         ),
     },
 

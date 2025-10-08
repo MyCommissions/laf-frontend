@@ -1,46 +1,27 @@
 import React, { useState } from "react";
 import ItemDetailsModal from "./itemDetailsModal";
+import ClaimModal from "./ClaimModal";
 import { getDisplayImageUrl } from "../../../utils/imageHelper";
 
-// Define the props for the FoundCard component
 interface LostItemCardProps {
   itemName: string;
   id: string;
   time: string;
   description: string;
-  imageSrc?: string; // raw key from DB
-  onClaimClick: () => void;
+  imageSrc?: string;
 }
 
 const getCurrentDateTime = () => {
   const now = new Date();
-  const optionsDate: Intl.DateTimeFormatOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  };
-  const optionsTime: Intl.DateTimeFormatOptions = {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  };
-  const dateString = now.toLocaleDateString("en-US", optionsDate);
-  const timeString = now.toLocaleTimeString("en-US", optionsTime);
-  return { date: dateString, time: timeString };
+  const optionsDate: Intl.DateTimeFormatOptions = { month: "long", day: "numeric", year: "numeric" };
+  const optionsTime: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
+  return { date: now.toLocaleDateString("en-US", optionsDate), time: now.toLocaleTimeString("en-US", optionsTime) };
 };
 
-const FoundCard: React.FC<LostItemCardProps> = ({
-  id,
-  itemName,
-  time,
-  description,
-  imageSrc,
-  onClaimClick,
-}) => {
+const FoundCard: React.FC<LostItemCardProps> = ({ id, itemName, time, description, imageSrc }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClaimOpen, setIsClaimOpen] = useState(false);
   const { date: liveDate } = getCurrentDateTime();
-
-  // ✅ Build final image URL (or placeholder)
   const finalImageSrc = getDisplayImageUrl(imageSrc);
 
   return (
@@ -52,18 +33,14 @@ const FoundCard: React.FC<LostItemCardProps> = ({
           <span className="text-sm">{liveDate}</span>
         </div>
 
-        {/* Fixed Image */}
+        {/* Image */}
         <div className="flex justify-center mb-4">
           <div className="w-full max-w-xs h-48">
-            <img
-              src={finalImageSrc}
-              alt={itemName}
-              className="w-full h-full rounded-lg object-cover"
-            />
+            <img src={finalImageSrc} alt={itemName} className="w-full h-full rounded-lg object-cover" />
           </div>
         </div>
 
-        {/* Content should expand but not break layout */}
+        {/* Content */}
         <div className="flex-grow">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold text-gray-800">{time}</span>
@@ -76,16 +53,14 @@ const FoundCard: React.FC<LostItemCardProps> = ({
 
         {/* Footer */}
         <div className="text-center mb-6">
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="text-sm text-gray-500 hover:underline"
-          >
+          <button onClick={() => setIsModalOpen(true)} className="text-sm text-gray-500 hover:underline">
             more information
           </button>
         </div>
+
         <div className="flex justify-center mt-auto">
           <button
-            onClick={onClaimClick}
+            onClick={() => setIsClaimOpen(true)}
             className="w-full bg-black text-white py-3 rounded-full font-bold shadow-md hover:bg-gray-800 transition-colors"
           >
             Claim
@@ -93,18 +68,16 @@ const FoundCard: React.FC<LostItemCardProps> = ({
         </div>
       </div>
 
-      {/* Item Details Modal */}
-      <ItemDetailsModal
-        item={{
-          id,
-          itemName,
-          time,
-          description,
-          imageSrc: finalImageSrc,
-        }}
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      {/* Modals */}
+      {isModalOpen && (
+        <ItemDetailsModal
+          item={{ id, itemName, time, description, imageSrc: finalImageSrc }}
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      {isClaimOpen && <ClaimModal onClose={() => setIsClaimOpen(false)} />}
     </div>
   );
 };

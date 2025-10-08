@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ChevronDown, Search, Filter } from "lucide-react"; // ✅ Filter icon imported
-import DataTable from "../table/DataTable";
+import DataTable from "./table/DataTable";
 
 const categories: string[] = [
   "Category",
