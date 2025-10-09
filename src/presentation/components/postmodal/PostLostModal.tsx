@@ -62,28 +62,49 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
     fileInputRef.current?.click()
   }
 
-  const isDisabled = (field: string): boolean => {
-    if (!imageFile) return true
+  const isDisabled = (field: string): boolean => { 
+    if (!imageFile) return true 
     switch (selectedCategory) {
-      case "ID":
-        if (["color", "size", "amount"].includes(field)) return true
-        break
-      case "Keys":
-        if (["amount"].includes(field)) return true
-        break
-      case "Cash":
-        if (["color", "size", "uid", "brand"].includes(field)) return true
-        break
-      case "Wallet":
-        if (["size"].includes(field)) return true
-        break
       case "Umbrella":
-        if (["amount", "uid"].includes(field)) return true
+        // Umbrella: requires itemSize + itemColor only
+        if (["amount", "brand", "uid"].includes(field)) return true;
         break
+
+      case "Wallet":
+        // Wallet: requires moneyAmount, itemSize, itemColor, brandType
+        if (["uid"].includes(field)) return true;
+        break
+
+      case "Phone":
+        // Phone: requires brandType + uniqueIdentifier
+        if (["color", "size", "amount"].includes(field)) return true;
+        break
+
+      case "Keys":
+        // Keys: requires uniqueIdentifier only
+        if (["color", "size", "amount", "brand"].includes(field)) return true;
+        break
+
+      case "ID":
+        // ID: requires uniqueIdentifier only
+        if (["color", "size", "amount", "brand"].includes(field)) return true;
+        break
+
+      case "Cash":
+        // Cash: requires moneyAmount only
+        if (["color", "size", "uid", "brand"].includes(field)) return true;
+        break
+
+      case "Others":
+        // Others: requires remarks only
+        if (["color", "size", "amount", "uid", "brand"].includes(field)) return true;
+        break
+
       default:
+        // Default (no category selected)
         break
     }
-    return false
+    return false 
   }
 
   const handleSubmit = () => {

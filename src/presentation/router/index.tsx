@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./middleware.protectedRoute";
+import AdminProtectedRoute from "./middleware.adminProtectedRoute";
 import GuestOnlyRoute from "./middleware.guestOnlyRoute";
 import { pages } from "./route";
 
@@ -34,20 +35,20 @@ const router = createBrowserRouter([
     },
 
     {
-        path: '/contact',
+        path: '/contact-us',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.ContactPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 
      {
-        path: '/about',
+        path: '/about-us',
         element: (
-            <GuestOnlyRoute>
+            <ProtectedRoute>
                 <pages.AboutUsPage/>
-            </GuestOnlyRoute>
+            </ProtectedRoute>
         )
     },
 

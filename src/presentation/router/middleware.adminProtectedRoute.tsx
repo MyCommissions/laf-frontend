@@ -12,7 +12,7 @@ const fetchCurrentUser = async () => {
   return res.data.data.user;
 };
 
-const ProtectedRoute: React.FC<Props> = ({ children }) => {
+const AdminProtectedRoute: React.FC<Props> = ({ children }) => {
   const { data: user, isLoading, isError } = useQuery({
     queryKey: ["currentUser"],
     queryFn: fetchCurrentUser,
@@ -21,11 +21,11 @@ const ProtectedRoute: React.FC<Props> = ({ children }) => {
 
   if (isLoading) return <div></div>;
 
-  if (isError || !user) {
+  if (isError || !user || user.role !== 1) {
     return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
 };
 
-export default ProtectedRoute;
+export default AdminProtectedRoute;

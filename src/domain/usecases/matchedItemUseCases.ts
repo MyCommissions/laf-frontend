@@ -1,15 +1,8 @@
-// domain/usecases/matchedItemUseCases.ts
 import { matchedItemRepository } from "../../data/repositories/matchedItem.repository";
-import { MatchedItem } from "../../data/models/MatchedItem";
+import type {
+  Item,
+} from "../../data/models/Item";
 
-// Fetch matched items
-export const getMatchedItemsUseCase = async (): Promise<MatchedItem[]> => {
-  return await matchedItemRepository.getMatchedItems();
-};
-
-// Claim matched item
-export const claimMatchedItemUseCase = async (
-  id: string
-): Promise<MatchedItem> => {
-  return await matchedItemRepository.claimMatchedItem(id);
+export const getMatchedAndPendingItems = async (): Promise<Item[]> => {
+  return await matchedItemRepository.getMatchedAndPendingItems();
 };

@@ -1,4 +1,3 @@
-// src/domain/usecases/itemUseCases.ts
 import { itemRepository } from "../../data/repositories/item.repository";
 import type {
   CreateItemRequest,

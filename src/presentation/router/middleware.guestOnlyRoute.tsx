@@ -19,7 +19,7 @@ const GuestOnlyRoute: React.FC<Props> = ({ children }) => {
     retry: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div></div>;
 
   if (user) {
     return <Navigate to="/home" replace />;
