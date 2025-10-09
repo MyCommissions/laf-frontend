@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import ItemDetailsModal from "./itemDetailsModal";
+import ClaimModal from "./ClaimModal";
 import { getDisplayImageUrl } from "../../../utils/imageHelper";
 import ClaimModal from "./ClaimModal";
 
-// Define the props for the FoundCard component
 interface LostItemCardProps {
   itemName: string;
   id: string;
@@ -57,14 +57,10 @@ const FoundCard: React.FC<LostItemCardProps> = ({
           <span className="text-sm">{formattedDate}</span>
         </div>
 
-        {/* Fixed Image */}
+        {/* Image */}
         <div className="flex justify-center mb-4">
           <div className="w-full max-w-xs h-48">
-            <img
-              src={finalImageSrc}
-              alt={itemName}
-              className="w-full h-full rounded-lg object-cover"
-            />
+            <img src={finalImageSrc} alt={itemName} className="w-full h-full rounded-lg object-cover" />
           </div>
         </div>
 
@@ -83,6 +79,7 @@ const FoundCard: React.FC<LostItemCardProps> = ({
 
         {/* Footer */}
         <div className="text-center mb-6">
+
           <button
             onClick={() => setIsDetailsOpen(true)}
             className="text-sm text-gray-500 hover:underline"
@@ -90,6 +87,7 @@ const FoundCard: React.FC<LostItemCardProps> = ({
             more information
           </button>
         </div>
+
         <div className="flex justify-center mt-auto">
           <button
             onClick={() => setIsClaimOpen(true)}
