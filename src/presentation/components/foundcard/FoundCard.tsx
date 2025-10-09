@@ -1,27 +1,51 @@
+"use client";
+
 import React, { useState } from "react";
 import ItemDetailsModal from "./itemDetailsModal";
 import ClaimModal from "./ClaimModal";
 import { getDisplayImageUrl } from "../../../utils/imageHelper";
+import ClaimModal from "./ClaimModal";
 
 interface LostItemCardProps {
   itemName: string;
   id: string;
-  time: string;
+  time: string; // item.createdAt from DB
   description: string;
-  imageSrc?: string;
+  imageSrc?: string; // raw key from DB
 }
 
-const getCurrentDateTime = () => {
-  const now = new Date();
-  const optionsDate: Intl.DateTimeFormatOptions = { month: "long", day: "numeric", year: "numeric" };
-  const optionsTime: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
-  return { date: now.toLocaleDateString("en-US", optionsDate), time: now.toLocaleTimeString("en-US", optionsTime) };
+const formatDateTime = (isoString: string) => {
+  const date = new Date(isoString);
+  const optionsDate: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  };
+  const optionsTime: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  };
+
+  const formattedDate = date.toLocaleDateString("en-US", optionsDate);
+  const formattedTime = date.toLocaleTimeString("en-US", optionsTime);
+  return { formattedDate, formattedTime };
 };
 
-const FoundCard: React.FC<LostItemCardProps> = ({ id, itemName, time, description, imageSrc }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const FoundCard: React.FC<LostItemCardProps> = ({
+  id,
+  itemName,
+  time,
+  description,
+  imageSrc,
+}) => {
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isClaimOpen, setIsClaimOpen] = useState(false);
-  const { date: liveDate } = getCurrentDateTime();
+
+  // Format time
+  const { formattedDate, formattedTime } = formatDateTime(time);
+
+  // ✅ Build final image URL (or placeholder)
   const finalImageSrc = getDisplayImageUrl(imageSrc);
 
   return (
@@ -30,7 +54,7 @@ const FoundCard: React.FC<LostItemCardProps> = ({ id, itemName, time, descriptio
         {/* Header */}
         <div className="flex justify-between items-center mb-4 text-gray-800">
           <span className="text-lg font-semibold">{itemName}</span>
-          <span className="text-sm">{liveDate}</span>
+          <span className="text-sm">{formattedDate}</span>
         </div>
 
         {/* Image */}
@@ -43,7 +67,9 @@ const FoundCard: React.FC<LostItemCardProps> = ({ id, itemName, time, descriptio
         {/* Content */}
         <div className="flex-grow">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold text-gray-800">{time}</span>
+            <span className="text-sm font-semibold text-gray-800">
+              {formattedTime}
+            </span>
             <span className="text-sm text-gray-500">ID: {id}</span>
           </div>
           <div className="mb-4">
@@ -53,7 +79,11 @@ const FoundCard: React.FC<LostItemCardProps> = ({ id, itemName, time, descriptio
 
         {/* Footer */}
         <div className="text-center mb-6">
-          <button onClick={() => setIsModalOpen(true)} className="text-sm text-gray-500 hover:underline">
+
+          <button
+            onClick={() => setIsDetailsOpen(true)}
+            className="text-sm text-gray-500 hover:underline"
+          >
             more information
           </button>
         </div>
@@ -68,15 +98,20 @@ const FoundCard: React.FC<LostItemCardProps> = ({ id, itemName, time, descriptio
         </div>
       </div>
 
-      {/* Modals */}
-      {isModalOpen && (
-        <ItemDetailsModal
-          item={{ id, itemName, time, description, imageSrc: finalImageSrc }}
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+      {/* Item Details Modal */}
+      <ItemDetailsModal
+        item={{
+          id,
+          itemName,
+          time: formattedTime,
+          description,
+          imageSrc: finalImageSrc,
+        }}
+        open={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+      />
 
+      {/* Claim Modal */}
       {isClaimOpen && <ClaimModal onClose={() => setIsClaimOpen(false)} />}
     </div>
   );
