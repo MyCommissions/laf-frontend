@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, Search, Filter } from "lucide-react"; // ✅ Filter icon imported
+import { ChevronDown, Search, Filter } from "lucide-react";
 import DataTable from "./table/DataTable";
 
 const categories: string[] = [
@@ -13,9 +13,15 @@ const categories: string[] = [
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Category");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<"Pending" | "Matched">("Pending");
 
-  const [isPostOpen, setIsPostOpen] = useState(false);
-  const [isLostOpen, setIsLostOpen] = useState(false);
+  // Simulated filtering (you can connect it to your table logic)
+  const handleTabClick = (tab: "Pending" | "Matched") => {
+    setActiveTab(tab);
+    // 👇 Example: If you have a DataTable with props, you can pass the activeTab to filter data
+    // DataTable will receive activeTab as a filter parameter
+    // e.g., <DataTable statusFilter={activeTab} />
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -61,34 +67,32 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-           {/* ✅ Passive Filter Label */}
-              <div className="flex items-center text-gray-500 space-x-1 select-none">
-                <Filter size={18} />
-                <span className="text-sm font-medium">Filter</span>
-              </div>
-
-          {/* Action Buttons */}
-          <div className="flex space-x-4 w-full sm:w-auto items-center">
-            {/* Pending Items Button */}
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => setIsPostOpen(true)}
-                className="whitespace-nowrap px-6 py-2 rounded-full border border-gray-300 bg-white text-black font-semibold shadow-md transition-all duration-200 hover:bg-gray-100"
-              >
-                Pending Items
-              </button>
-
-             
+          {/* ✅ Filter Label + Animated Tabs */}
+          <div className="flex items-center space-x-4 text-gray-500 select-none">
+            <div className="flex items-center space-x-1">
+              <Filter size={18} />
+              <span className="text-sm font-medium">Filter</span>
             </div>
 
-            {/* Matched Items Button */}
-            <button
-              onClick={() => setIsLostOpen(true)}
-              style={{ backgroundColor: "#F80B02" }}
-              className="whitespace-nowrap px-6 py-2 rounded-full border border-gray-300 text-white font-semibold shadow-md transition-all duration-200 hover:bg-opacity-90"
-            >
-              Matched Items
-            </button>
+            {/* Animated Tabs */}
+            <div className="flex bg-gray-200 rounded-full p-1 relative">
+              {["Pending", "Matched"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => handleTabClick(tab as "Pending" | "Matched")}
+                  className={`relative z-10 px-4 py-1 text-sm font-medium rounded-full transition-all duration-300 ${
+                    activeTab === tab
+                      ? "text-white"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  {tab}
+                  {activeTab === tab && (
+                    <span className="absolute inset-0 rounded-full bg-black transition-all duration-300 scale-105 z-[-1]" />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -96,7 +100,8 @@ const Home: React.FC = () => {
       {/* Main content area */}
       <div className="bg-white p-6 shadow-md rounded-lg">
         <div className="text-center text-gray-500 py-10">
-          <DataTable />
+          <DataTable></DataTable>
+          {/* <DataTable statusFilter={activeTab} /> */}
         </div>
       </div>
     </div>
