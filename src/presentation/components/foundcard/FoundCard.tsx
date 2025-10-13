@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import ItemDetailsModal from "./itemDetailsModal";
 import ClaimModal from "./ClaimModal";
 import { getDisplayImageUrl } from "../../../utils/imageHelper";
-import ClaimModal from "./ClaimModal";
+
 
 interface LostItemCardProps {
   itemName: string;
