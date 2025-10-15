@@ -5,6 +5,7 @@ import { Pencil, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
 
 import TableItemDetailsModal from "./TableItemsDetailsModal";
+import { getDisplayImageUrl } from "../../../../../utils/imageHelper";
 
 interface DataTableProps {
   items: Item[];
@@ -124,7 +125,7 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
                   className="h-10 w-10 rounded-full object-cover"
                   src={
                     item.imageUrl
-                      ? `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${item.imageUrl}`
+                      ? getDisplayImageUrl(item.imageUrl)
                       : "https://placehold.co/40x40/6366f1/ffffff?text=NA"
                   }
                   alt={item.category}
