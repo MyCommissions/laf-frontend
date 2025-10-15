@@ -102,22 +102,22 @@ const TableItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Size</span>
-                <span>N/A</span>
+                <span>{item.itemSize || "N/A"}</span>
               </div>
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Color</span>
-                <span>N/A</span>
+                <span>{item.itemColor || "N/A"}</span>
               </div>
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Brand</span>
-                <span>{item.brandType}</span>
+                <span>{item.brandType || "-"}</span>
               </div>
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Unique ID</span>
-                <span>{item.uniqueIdentifier}</span>
+                <span>{item.uniqueIdentifier || "-"}</span>
               </div>
             </div>
           </div>

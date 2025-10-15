@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from "react";
 import { Pencil, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
-import TableItemDetailsModal from "./TableItemsDetailsModal"; // ✅ import modal
+
+import TableItemDetailsModal from "./TableItemsDetailsModal";
 
 interface DataTableProps {
   items: Item[];
@@ -15,7 +16,6 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     direction: "asc" | "desc";
   }>({ key: null, direction: "asc" });
 
-  // ✅ Add state for modal
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
   const gridStyle: React.CSSProperties = {
@@ -117,7 +117,7 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
               key={item._id}
               className="grid py-4 px-6 items-center hover:bg-gray-800 transition-colors text-gray-100 cursor-pointer"
               style={gridStyle}
-              onClick={() => handleRowClick(item)} // ✅ row click
+              onClick={() => handleRowClick(item)}
             >
               <div className="col-span-2 flex items-center gap-3">
                 <img
