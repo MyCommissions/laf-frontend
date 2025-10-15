@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useMemo } from "react";
 import { Pencil, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
@@ -66,6 +67,11 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     );
   };
 
+  // ✅ Handle cell click
+  const handleRowClick = (item: Item) => setSelectedItem(item);
+ 
+  
+
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-6 w-full max-w-20xl mx-auto">
       {/* Table Header */}
@@ -108,6 +114,7 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
             minute: "2-digit",
           });
           const date = createdAt.toLocaleDateString();
+
 
           const rawStatus = item.status?.toLowerCase() || "pending";
           const statusLabel =
@@ -178,9 +185,19 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
                 </span>
               </div>
             </div>
+
+         
           );
         })}
       </div>
+        {/* Item Details Modal */}
+            {selectedItem && ( <TableItemDetailsModal
+              item= {selectedItem}
+              onClose={() => setSelectedItem(null)}
+              onEdit={(item) => console.log("Edit:", item)}
+              onDelete={(id) => console.log("Delete:", id)}
+              /> 
+            )}
     </div>
   );
 };
