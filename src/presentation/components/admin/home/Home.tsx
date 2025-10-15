@@ -1,6 +1,9 @@
+"use client";
 import React, { useState } from "react";
 import { ChevronDown, Search, Filter } from "lucide-react";
 import DataTable from "./table/DataTable";
+import { useGetMatchedAndPendingItems } from "../../../../domain/hooks/useItems";
+import { Item } from "../../../../data/models/Item";
 
 const categories: string[] = [
   "Category",
@@ -15,12 +18,26 @@ const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"Pending" | "Matched">("Pending");
 
-  // Simulated filtering (you can connect it to your table logic)
+  // ✅ Fetch items from hook
+  const { data: items, isLoading, isError } = useGetMatchedAndPendingItems();
+
+  // ✅ Filter items by tab (Pending or Matched)
+  const filteredItems: Item[] =
+    items?.filter(
+      (item) =>
+        item.status?.toLowerCase() === activeTab.toLowerCase() &&
+        (selectedCategory === "Category" ||
+          item.category?.toLowerCase() === selectedCategory.toLowerCase()) &&
+        (searchQuery === "" ||
+          item.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.uniqueIdentifier
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()))
+    ) || [];
+
   const handleTabClick = (tab: "Pending" | "Matched") => {
     setActiveTab(tab);
-    // 👇 Example: If you have a DataTable with props, you can pass the activeTab to filter data
-    // DataTable will receive activeTab as a filter parameter
-    // e.g., <DataTable statusFilter={activeTab} />
   };
 
   return (
@@ -67,7 +84,7 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* ✅ Filter Label + Animated Tabs */}
+          {/* Filter Tabs */}
           <div className="flex items-center space-x-4 text-gray-500 select-none">
             <div className="flex items-center space-x-1">
               <Filter size={18} />
@@ -99,10 +116,15 @@ const Home: React.FC = () => {
 
       {/* Main content area */}
       <div className="bg-white p-6 shadow-md rounded-lg">
-        <div className="text-center text-gray-500 py-10">
-          <DataTable></DataTable>
-          {/* <DataTable statusFilter={activeTab} /> */}
-        </div>
+        {isLoading ? (
+          <div className="text-center text-gray-400 py-10">Loading...</div>
+        ) : isError ? (
+          <div className="text-center text-red-500 py-10">
+            Failed to load items.
+          </div>
+        ) : (
+          <DataTable items={filteredItems} />
+        )}
       </div>
     </div>
   );
