@@ -3,10 +3,12 @@
 // Base User model
 export interface User {
   _id: string;
+  id: string;
   firstname: string;
   lastname: string;
   email: string;
   roleId: number;
+  role: number;
   status: boolean;
   createdAt: string;
 }
