@@ -1,11 +1,17 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Pencil } from "lucide-react";
 import { useGetFoundItems } from "../../../../../domain/hooks/useItems";
 import { Item } from "../../../../../data/models/Item"; // ✅ Use your shared model
 
+
+import TableItemDetailsModal from "./TableItemsDetailsModal";
+
 const DataTable: React.FC = () => {
   const { data: items, isLoading, isError } = useGetFoundItems();
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+ 
 
   if (isLoading) {
     return (
@@ -20,6 +26,11 @@ const DataTable: React.FC = () => {
       </div>
     );
   }
+
+  // ✅ Handle cell click
+  const handleRowClick = (item: Item) => setSelectedItem(item);
+ 
+  
 
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-6 w-full max-w-20xl mx-auto">
@@ -49,7 +60,6 @@ const DataTable: React.FC = () => {
           });
           const date = createdAt.toLocaleDateString();
 
-          // ✅ Safely handle possible undefined values
           const status = item.status
             ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
             : "Pending";
@@ -57,7 +67,8 @@ const DataTable: React.FC = () => {
           return (
             <div
               key={item._id}
-              className="grid grid-cols-12 py-4 px-6 items-center hover:bg-gray-800 transition-colors"
+              onClick={() => handleRowClick(item)} // clickable row
+              className="grid grid-cols-12 py-4 px-6 items-center hover:bg-gray-800 transition-colors cursor-pointer"
             >
               <div className="col-span-2 flex items-center gap-3">
                 <img
@@ -106,14 +117,21 @@ const DataTable: React.FC = () => {
                 >
                   {status}
                 </span>
-                <div className="ml-5 text-sm font-medium text-blue-400 cursor-pointer hover:underline">
-                  <Pencil size={18} />
-                </div>
               </div>
             </div>
+
+         
           );
         })}
       </div>
+        {/* Item Details Modal */}
+            {selectedItem && ( <TableItemDetailsModal
+              item= {selectedItem}
+              onClose={() => setSelectedItem(null)}
+              onEdit={(item) => console.log("Edit:", item)}
+              onDelete={(id) => console.log("Delete:", id)}
+              /> 
+            )}
     </div>
   );
 };
