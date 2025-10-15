@@ -3,6 +3,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
+import { getDisplayImageUrl } from "../../../../../utils/imageHelper";
 
 interface ItemDetailsModalProps {
   item: Item | null;
@@ -22,6 +23,8 @@ const TableItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
   const createdAt = new Date(item.createdAt);
   const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const date = createdAt.toLocaleDateString();
+
+  const finalImageSrc = getDisplayImageUrl(item.imageUrl);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-sans">
@@ -45,8 +48,8 @@ const TableItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
           <div className="flex-shrink-0">
             <img
               src={
-                item.imageUrl
-                  ? `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${item.imageUrl}`
+                finalImageSrc
+                  ? finalImageSrc
                   : "https://placehold.co/180x180/6366f1/ffffff?text=No+Image"
               }
               alt={item.category}
