@@ -117,9 +117,6 @@ const DataTable: React.FC = () => {
                 >
                   {status}
                 </span>
-                <div className="ml-5 text-sm font-medium text-blue-400 cursor-pointer hover:underline">
-                  <Pencil size={18} />
-                </div>
               </div>
             </div>
 
