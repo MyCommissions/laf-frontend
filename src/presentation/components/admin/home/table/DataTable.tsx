@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Pencil, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
+import TableItemDetailsModal from "./TableItemsDetailsModal";
 
 interface DataTableProps {
   items: Item[];
@@ -13,6 +14,8 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     key: keyof Item | "date" | null;
     direction: "asc" | "desc";
   }>({ key: null, direction: "asc" });
+
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
   const gridStyle: React.CSSProperties = {
     gridTemplateColumns: "repeat(14, minmax(0, 1fr))",
@@ -67,10 +70,8 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     );
   };
 
-  // ✅ Handle cell click
+  // Handle row click
   const handleRowClick = (item: Item) => setSelectedItem(item);
- 
-  
 
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-6 w-full max-w-20xl mx-auto">
@@ -101,7 +102,6 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
           Type {renderSortIcon("found")}
         </div>
         <div>Edit</div>
-        {/* ⛔ Status excluded from filtering */}
         <div>Status</div>
       </div>
 
@@ -115,7 +115,6 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
           });
           const date = createdAt.toLocaleDateString();
 
-
           const rawStatus = item.status?.toLowerCase() || "pending";
           const statusLabel =
             rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
@@ -126,6 +125,7 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
               key={item._id}
               className="grid py-4 px-6 items-center hover:bg-gray-800 transition-colors text-gray-100"
               style={gridStyle}
+              onClick={() => handleRowClick(item)}
             >
               <div className="col-span-2 flex items-center gap-3">
                 <img
@@ -185,19 +185,19 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
                 </span>
               </div>
             </div>
-
-         
           );
         })}
       </div>
-        {/* Item Details Modal */}
-            {selectedItem && ( <TableItemDetailsModal
-              item= {selectedItem}
-              onClose={() => setSelectedItem(null)}
-              onEdit={(item) => console.log("Edit:", item)}
-              onDelete={(id) => console.log("Delete:", id)}
-              /> 
-            )}
+
+      {/* Item Details Modal */}
+      {selectedItem && (
+        <TableItemDetailsModal
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+          onEdit={(item) => console.log("Edit:", item)}
+          onDelete={(id) => console.log("Delete:", id)}
+        />
+      )}
     </div>
   );
 };
