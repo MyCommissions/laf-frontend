@@ -45,18 +45,16 @@ const TableItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
         {/* Content Section */}
         <div className="flex gap-8">
           {/* Left Side - Image */}
-          <div className="flex-shrink-0 w-48 h-48">
-            {item.imageUrl ? (
-              <img
-                src={finalImageSrc}
-                alt={item.category || "Item"}
-                className="w-full h-full rounded-lg object-cover border border-gray-300"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-lg border border-gray-300">
-                <p className="text-gray-500 text-sm text-center">No Image Available</p>
-              </div>
-            )}
+          <div className="flex-shrink-0">
+            <img
+              src={
+                finalImageSrc
+                  ? finalImageSrc
+                  : "https://placehold.co/180x180/6366f1/ffffff?text=No+Image"
+              }
+              alt={item.category}
+              className="w-48 h-48 rounded-lg object-cover border border-gray-300"
+            />
           </div>
 
           {/* Right Side - Details */}

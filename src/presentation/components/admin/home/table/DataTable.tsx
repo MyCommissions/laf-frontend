@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Pencil, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
+
 import TableItemDetailsModal from "./TableItemsDetailsModal";
 
 interface DataTableProps {
@@ -21,12 +22,10 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     gridTemplateColumns: "repeat(14, minmax(0, 1fr))",
   };
 
-  // Handle sorting when column header is clicked
   const handleSort = (key: keyof Item | "date") => {
     setSortConfig((prev) => ({
       key,
-      direction:
-        prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
     }));
   };
 
@@ -54,12 +53,9 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
   }, [items, sortConfig]);
 
   if (!items || items.length === 0) {
-    return (
-      <div className="text-center text-gray-400 mt-10">No items found.</div>
-    );
+    return <div className="text-center text-gray-400 mt-10">No items found.</div>;
   }
 
-  // Helper to display sorting icon
   const renderSortIcon = (key: keyof Item | "date") => {
     if (sortConfig.key !== key)
       return <ArrowUpDown size={14} className="inline ml-1 text-gray-400" />;
@@ -70,7 +66,7 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     );
   };
 
-  // Handle row click
+  // ✅ Set selected item on row click
   const handleRowClick = (item: Item) => setSelectedItem(item);
 
   return (
@@ -109,21 +105,17 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
       <div className="divide-y divide-gray-700">
         {sortedItems.map((item: Item, index: number) => {
           const createdAt = new Date(item.createdAt);
-          const time = createdAt.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+          const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
           const date = createdAt.toLocaleDateString();
 
           const rawStatus = item.status?.toLowerCase() || "pending";
-          const statusLabel =
-            rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
+          const statusLabel = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
           const type = item.found ? "Found" : "Lost";
 
           return (
             <div
               key={item._id}
-              className="grid py-4 px-6 items-center hover:bg-gray-800 transition-colors text-gray-100"
+              className="grid py-4 px-6 items-center hover:bg-gray-800 transition-colors text-gray-100 cursor-pointer"
               style={gridStyle}
               onClick={() => handleRowClick(item)}
             >
@@ -142,35 +134,23 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
                     {item.firstName} {item.lastName}
                   </div>
                   <div className="text-xs text-gray-400">{item.email}</div>
-                  <div className="text-xs text-gray-400">
-                    {item.contactNumber}
-                  </div>
+                  <div className="text-xs text-gray-400">{item.contactNumber}</div>
                 </div>
               </div>
 
-              <div className="text-sm font-medium text-gray-100">
-                {index + 1}
-              </div>
+              <div className="text-sm font-medium text-gray-100">{index + 1}</div>
               <div className="text-sm font-medium text-gray-100">{time}</div>
               <div className="text-xs text-gray-400">{date}</div>
               <div className="text-xs text-gray-300">{item.category}</div>
-              <div className="text-xs text-gray-300">
-                {item.moneyAmount ?? "-"}
-              </div>
+              <div className="text-xs text-gray-300">{item.moneyAmount ?? "-"}</div>
               <div className="text-xs text-gray-300">{item.itemSize || "-"}</div>
               <div className="text-xs text-gray-300">{item.itemColor || "-"}</div>
               <div className="text-xs text-gray-300">{item.brandType || "-"}</div>
-              <div className="text-xs text-gray-300">
-                {item.uniqueIdentifier || "-"}
-              </div>
-
+              <div className="text-xs text-gray-300">{item.uniqueIdentifier || "-"}</div>
               <div className="text-xs text-gray-300">{type}</div>
-
               <div className="ml-5 text-sm font-medium text-blue-400 cursor-pointer hover:underline">
                 <Pencil size={18} />
               </div>
-
-              {/* Status last column */}
               <div className="flex justify-center">
                 <span
                   className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -189,13 +169,13 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
         })}
       </div>
 
-      {/* Item Details Modal */}
+      {/* ✅ Item Details Modal */}
       {selectedItem && (
         <TableItemDetailsModal
           item={selectedItem}
           onClose={() => setSelectedItem(null)}
-          onEdit={(item) => console.log("Edit:", item)}
-          onDelete={(id) => console.log("Delete:", id)}
+          onEdit={(item: Item) => console.log("Edit:", item)}
+          onDelete={(id: string) => console.log("Delete:", id)}
         />
       )}
     </div>
