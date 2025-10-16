@@ -1,30 +1,34 @@
+// src/data/models/User.ts
+
+// Base User model
 export interface User {
   _id: string;
+  id: string;
   firstname: string;
   lastname: string;
   email: string;
   roleId: number;
+  role: number;
   status: boolean;
   createdAt: string;
 }
 
+// Generic API wrapper
+export interface ApiResponse<T = null> {
+  status: string; // "success" | "fail"
+  message: string; // server-provided message
+  data?: T; // optional payload
+}
+
+// Auth-specific responses
+export type AuthResponse = ApiResponse<{ user: User }>;
+export type LoginResponse = AuthResponse;
+export type RegisterResponse = ApiResponse; // no data returned, only status/message
+
+// Requests
 export interface LoginRequest {
   email: string;
   password: string;
-  rememberMe: boolean;
-}
-
-export interface LoginResponse {
-  status: string;
-  message: string;
-  data: {
-    token: string;
-    user: {
-      id: string;
-      email: string;
-      role: number; // or `string` if you map roleId to a string like "admin"
-    };
-  };
 }
 
 export interface RegisterRequest {
@@ -34,7 +38,15 @@ export interface RegisterRequest {
   password: string;
 }
 
-export interface RegisterResponse {
-  status: string;
-  message: string;
+// Data used on signup form (client-side abstraction)
+export type SignUpData = RegisterRequest;
+
+export interface CreateAccountData extends SignUpData {
+  roleId: number;
 }
+
+// Role constants
+export const ROLES = {
+  ADMIN: 1,
+  STAFF: 2,
+} as const;

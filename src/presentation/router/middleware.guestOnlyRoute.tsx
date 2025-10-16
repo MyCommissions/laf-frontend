@@ -1,14 +1,16 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
 
 interface Props {
   children: React.ReactNode;
 }
 
-const GuestOnlyRoute = ({ children }: Props) => {
-  const token = localStorage.getItem("token");
+const GuestOnlyRoute: React.FC<Props> = ({ children }) => {
+  const { user } = useAuth();
 
-  if (token) {
-    return <Navigate to="/dashboard" replace />;
+  if (user) {
+    return <Navigate to="/home" replace />;
   }
 
   return <>{children}</>;

@@ -1,18 +1,24 @@
+// src/presentation/router/middleware.protectedRoute.tsx
+import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
 
 interface Props {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
-const ProtectedRoute = ({ children }: Props) => {
-    const token = localStorage.getItem('token');
+const ProtectedRoute: React.FC<Props> = ({ children }) => {
+  const { user, loading } = useAuth();
 
-    if (!token) {
-        return <Navigate to="/signin" replace />
-    }
+  if (loading) {
+    return <div>Loading...</div>; // Or a spinner
+  }
 
-    return <>{children}</>
-}
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
 
+  return <>{children}</>;
+};
 
 export default ProtectedRoute;

@@ -1,210 +1,152 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { LoginRequest } from "../../../data/models/User";
-import { EyeOff, Eye, Loader } from "lucide-react";
-import { ToastMessage } from "../ui/ToastMessage";
+// src/presentation/components/auth/Login.tsx
+
+import React, { useEffect, useState } from "react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 import { useLogin } from "../../../domain/hooks/useAuth";
-import { loginSchema } from "../../../domain/validations/userValidation";
+import { loginSchema } from "../../validations/userValidation";
+import { useNavigate } from "react-router-dom";
+import { ToastMessage } from "../ui/ToastMessage";
+import { LoginRequest } from "../../../data/models/User";
+import { useAuth } from "../../../presentation/providers/AuthProvider";
 
-export default function LoginForm() {
-    const [toastType, setToastType] = useState<"success" | "error" | "warning">("success");
-    const [showToast, setShowToast] = useState(false);
-    const [showMessage, setShowMessage] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
-    const mutation = useLogin();
-    const [formData, setFormData] = useState<LoginRequest>({
-        email: "",
-        password: "",
-        rememberMe: false
-    });
+const Login: React.FC = () => {
+  const [toastType, setToastType] = useState<"success" | "error" | "warning">("success");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState<LoginRequest>({
+    email: "",
+    password: "",
+  });
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  const { setUser } = useAuth();
 
-    useEffect(() => {
-        if (showToast) {
-            const timer = setTimeout(() => setShowToast(false), 4000); // auto-close after 4s
-            return () => clearTimeout(timer);
-        }
-    }, [showToast]);
+  const navigate = useNavigate();
+  const { mutate: login, isPending } = useLogin();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = loginSchema.safeParse(formData);
+    if (!result.success) {
+      setToastType("error");
+      setToastMessage(result.error.message);
+      setShowToast(true);
+      return;
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
-
-        const result = loginSchema.safeParse(formData);
-        if (!result.success) {
-            setError(result.error.message);
-            return;
+    login(formData, {
+      onSuccess: (data) => {
+        // ✅ Immediately update context so ProtectedRoute sees it
+        if (data?.data?.user) {
+          setUser(data.data.user);
         }
 
-        mutation.mutate(result.data, {
-            onSuccess: (data) => {
-                const { message } = data;
+        setToastType("success");
+        setToastMessage(data.message || "Login successful");
+        setShowToast(true);
 
-                setToastType("success");
-                setShowMessage(message);
-                setShowToast(true);
+        // ✅ Short delay for UX, then navigate
+        setTimeout(() => navigate("/home"), 800);
+      },
+      onError: (error: any) => {
+        setToastType("error");
+        setToastMessage(error.message || "Login failed");
+        setShowToast(true);
+      },
+    });
+  };
 
-                setTimeout(() => navigate('/dashboard'), 1500);
-            },
-            onError: (error) => {
-                setToastType("error");
-                setShowMessage(error.message || "Login failed");
-                setError(error.message || "Login failed");
-                setShowToast(true);
-            },
-            onSettled: () => {
-                setLoading(false);
-            }
-        })
-    };
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-[#D4D4D4] p-4">
+      <div className="w-full max-w-sm bg-white p-8 rounded-[30px] shadow-lg">
+        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 
-    return (
-        <div className="flex h-auto lg:h-[90vh] flex-col items-center justify-center px-4 sm:px-6 py-10">
-            {/* Header */}
-            <div className="text-center mb-8">
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#FFFFFF]">
-                    Welcome Back!
-                </h2>
-                <p className="mt-2 text-lg sm:text-xl italic font-medium text-[#FFFFFF]">
-                    Log in to your account to continue.
-                </p>
+        <form onSubmit={handleSubmit}>
+          {/* Email Field */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Input Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 rounded-xl shadow-sm border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          {/* Password Field */}
+          <div className="mb-2">
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Input Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 pr-10 rounded-xl shadow-sm border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <div
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </div>
             </div>
+          </div>
 
-            {/* Form Container */}
-            <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-[625px] login-form">
-                {/* Email Field */}
-                <div>
-                    <label htmlFor="email" className="block text-base sm:text-lg font-medium text-[#FFFFFF]">
-                        Email address
-                    </label>
-                    <div className="mt-2">
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            required
-                            autoComplete="email"
-                            placeholder="you@example.com"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full h-12 sm:h-[62px] rounded-[10px] border border-white bg-[#E9EFC040] px-4 py-2 text-sm sm:text-base text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500"
-                        />
-                    </div>
-                </div>
+          {/* Forget Password */}
+          <div className="text-right text-sm text-gray-600 mb-4 cursor-pointer hover:underline">
+            Forget Password
+          </div>
 
-                {/* Password Field */}
-                <div>
-                    <label htmlFor="password" className="block text-base sm:text-lg font-medium text-[#FFFFFF]">
-                        Password
-                    </label>
-                    <div className="mt-2 relative">
-                        <input
-                            id="password"
-                            name="password"
-                            type={showPassword ? "text" : "password"}
-                            required
-                            autoComplete="current-password"
-                            placeholder="********"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full h-12 sm:h-[62px] rounded-[10px] border border-white bg-[#E9EFC040] px-4 py-2 pr-12 text-sm sm:text-base text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500"
-                        />
-
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword((prev) => !prev)}
-                            className="absolute inset-y-0 right-4 flex items-center text-white focus:outline-none"
-                            tabIndex={-1}
-                        >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-
-                    </div>
-                </div>
-
-                {/* Remember Me + Forgot */}
-                <div className="flex items-center justify-between">
-                    <label className="flex items-center space-x-2 cursor-pointer select-none text-sm text-[#FFFFFF]">
-                        <input
-                            type="checkbox"
-                            checked={formData.rememberMe}
-                            onChange={(e) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                rememberMe: e.target.checked
-                            }))
-                            }
-                            className="peer hidden"
-                        />
-                        <div className="h-5 w-5 rounded border border-[#FFFFFF] bg-[#E9EFC040] peer-checked:bg-[#E9EFC040] peer-checked:border-[#FFFFFF] flex items-center justify-center">
-                            {formData.rememberMe && (
-                            <svg
-                                className="w-3 h-3 text-white"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="3"
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                            )}
-                        </div>
-                        <span className="text-sm sm:text-base">Remember me</span>
-                    </label>
-
-                    <Link to="/forgot-password" className="text-sm sm:text-base font-semibold text-[#FFFFFF] hover:text-indigo-500 underline">
-                        Forgot password?
-                    </Link>
-                </div>
-
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-
-                {/* Submit Button */}
-                <div className="flex justify-center">
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-[13vw] h-12 sm:h-[62px] flex justify-center items-center rounded-md bg-[#B4E197] border border-[#B4E197] px-3 py-2 text-base sm:text-lg font-semibold text-black shadow-xs hover:bg-[#E9EFC040] hover:border-white hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                        {loading ? (
-                                <>
-                                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                                    Signing in...
-                                </>
-                            ) : (
-                                "Sign in"
-                            )
-                        }
-                    </button>
-                </div>
-            </form>
-
-            {showToast && (
-                <ToastMessage
-                    type={toastType}
-                    message={showMessage}
-                    onClose={() => setShowToast(false)}
-                />
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isPending}
+            className="w-full bg-black text-white py-2 rounded-full hover:bg-gray-800 transition flex items-center justify-center"
+          >
+            {isPending ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign in"
             )}
+          </button>
+        </form>
 
-            {/* Footer Link */}
-            <p className="mt-4 text-center text-sm sm:text-base text-[#FFFFFF]">
-                Don't have an account?{' '}
-                <Link to="/signup" className="font-semibold hover:text-indigo-600 underline">
-                    Sign up
-                </Link>
-            </p>
-        </div>
-    );
-}
+        {/* Toast */}
+        {showToast && (
+          <ToastMessage
+            type={toastType}
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Login;
