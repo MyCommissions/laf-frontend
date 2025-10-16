@@ -62,7 +62,12 @@ const Login: React.FC = () => {
         setShowToast(true);
 
         // ✅ Short delay for UX, then navigate
-        setTimeout(() => navigate("/home"), 800);
+
+        if (data.data?.user.role == 1) {
+          setTimeout(() => navigate("/admin/home"), 1500);
+        } else {
+          setTimeout(() => navigate("/home"), 1500);
+        }
       },
       onError: (error: any) => {
         setToastType("error");
