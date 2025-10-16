@@ -70,6 +70,11 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
   // ✅ Set selected item on row click
   const handleRowClick = (item: Item) => setSelectedItem(item);
 
+  // ✅ Handle cell click
+  const handleRowClick = (item: Item) => setSelectedItem(item);
+ 
+  
+
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-6 w-full max-w-20xl mx-auto">
       {/* Table Header */}
@@ -166,6 +171,8 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
                 </span>
               </div>
             </div>
+
+         
           );
         })}
       </div>
