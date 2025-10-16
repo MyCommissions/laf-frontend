@@ -67,9 +67,6 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     );
   };
 
-  // ✅ Set selected item on row click
-  const handleRowClick = (item: Item) => setSelectedItem(item);
-
   // ✅ Handle cell click
   const handleRowClick = (item: Item) => setSelectedItem(item);
  
