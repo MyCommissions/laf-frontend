@@ -7,6 +7,7 @@ import { loginSchema } from "../../validations/userValidation";
 import { useNavigate } from "react-router-dom";
 import { ToastMessage } from "../ui/ToastMessage";
 import { LoginRequest } from "../../../data/models/User";
+import { useAuth } from "../../../presentation/providers/AuthProvider";
 
 const Login: React.FC = () => {
   const [toastType, setToastType] = useState<"success" | "error" | "warning">("success");
@@ -17,6 +18,8 @@ const Login: React.FC = () => {
     email: "",
     password: "",
   });
+
+  const { setUser } = useAuth();
 
   const navigate = useNavigate();
   const { mutate: login, isPending } = useLogin();
@@ -49,11 +52,17 @@ const Login: React.FC = () => {
 
     login(formData, {
       onSuccess: (data) => {
+        // ✅ Immediately update context so ProtectedRoute sees it
+        if (data?.data?.user) {
+          setUser(data.data.user);
+        }
+
         setToastType("success");
         setToastMessage(data.message || "Login successful");
         setShowToast(true);
 
-        setTimeout(() => navigate("/home"), 1500);
+        // ✅ Short delay for UX, then navigate
+        setTimeout(() => navigate("/home"), 800);
       },
       onError: (error: any) => {
         setToastType("error");

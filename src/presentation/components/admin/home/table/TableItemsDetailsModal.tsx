@@ -3,6 +3,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
+import { getDisplayImageUrl } from "../../../../../utils/imageHelper";
 
 interface ItemDetailsModalProps {
   item: Item | null;
@@ -23,6 +24,7 @@ const TableItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
   const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const date = createdAt.toLocaleDateString();
 
+  const finalImageSrc = getDisplayImageUrl(item.imageUrl);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-sans">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 relative animate-fadeIn">
@@ -45,8 +47,8 @@ const TableItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
           <div className="flex-shrink-0">
             <img
               src={
-                item.imageUrl
-                  ? `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${item.imageUrl}`
+                finalImageSrc
+                  ? finalImageSrc
                   : "https://placehold.co/180x180/6366f1/ffffff?text=No+Image"
               }
               alt={item.category}
@@ -99,22 +101,22 @@ const TableItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Size</span>
-                <span>N/A</span>
+                <span>{item.itemSize || "N/A"}</span>
               </div>
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Color</span>
-                <span>N/A</span>
+                <span>{item.itemColor || "N/A"}</span>
               </div>
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Brand</span>
-                <span>{item.brandType}</span>
+                <span>{item.brandType || "-"}</span>
               </div>
 
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Unique ID</span>
-                <span>{item.uniqueIdentifier}</span>
+                <span>{item.uniqueIdentifier || "-"}</span>
               </div>
             </div>
           </div>

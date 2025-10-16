@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const navLinks = [
-  { name: "Records", href: "/records" },
+  { name: "Records", href: "/admin/home" },
   // { name: "Lost", href: "/lost" },
   // { name: "Found", href: "/found" },
   { name: "Claimed", href: "/claimed" },
