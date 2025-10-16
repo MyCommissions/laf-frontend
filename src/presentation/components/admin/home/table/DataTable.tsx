@@ -116,7 +116,7 @@ const DataTable: React.FC = () => {
                   }`}
                 >
                   {status}
-                </span>
+                </span> 
               </div>
             </div>
 
