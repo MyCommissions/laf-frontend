@@ -10,7 +10,7 @@ const GuestOnlyRoute: React.FC<Props> = ({ children }) => {
   const { user } = useAuth();
 
   console.log(user?.role)
-  
+        
   if (user) {
     return <Navigate to="/home" replace />;
   }

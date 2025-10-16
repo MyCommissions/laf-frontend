@@ -348,7 +348,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                 />
               </div>
             </div>
-
+                          
             {/* Contact & Others */}
             <div className="flex flex-col space-y-5">
               <div>
