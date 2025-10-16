@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Pencil, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
 
 import TableItemDetailsModal from "./TableItemsDetailsModal";
@@ -18,10 +18,6 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
   }>({ key: null, direction: "asc" });
 
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-
-  const gridStyle: React.CSSProperties = {
-    gridTemplateColumns: "repeat(14, minmax(0, 1fr))",
-  };
 
   const handleSort = (key: keyof Item | "date") => {
     setSortConfig((prev) => ({
@@ -67,111 +63,101 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
     );
   };
 
-  // ✅ Handle cell click
+  // ✅ Handle row click
   const handleRowClick = (item: Item) => setSelectedItem(item);
- 
-  
 
   return (
-    <div className="bg-[#0f172a] rounded-xl shadow-lg p-6 w-full max-w-20xl mx-auto">
-      {/* Table Header */}
-      <div
-        className="grid py-4 px-6 border-b border-gray-700 text-sm font-semibold uppercase tracking-wider text-gray-200 select-none"
-        style={gridStyle}
-      >
-        <div className="col-span-2" />
-        <div onClick={() => handleSort("_id")} className="cursor-pointer flex items-center">
-          Item No. {renderSortIcon("_id")}
+    <div className="bg-[#0f172a] rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
+      <div className="min-w-[1000px]">
+        {/* Table Header */}
+        <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 border-b border-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-200 select-none">
+          <div className="col-span-1" />
+          <div onClick={() => handleSort("_id")} className="cursor-pointer flex items-center">
+            Item No. {renderSortIcon("_id")}
+          </div>
+          <div onClick={() => handleSort("createdAt")} className="cursor-pointer flex items-center">
+            Time {renderSortIcon("createdAt")}
+          </div>
+          <div onClick={() => handleSort("date")} className="cursor-pointer flex items-center">
+            Date {renderSortIcon("date")}
+          </div>
+          <div onClick={() => handleSort("category")} className="cursor-pointer flex items-center">
+            Category {renderSortIcon("category")}
+          </div>
+          <div>Amount</div>
+          <div>Size</div>
+          <div>Color</div>
+          <div>Brand</div>
+          <div>Unique ID</div>
+          <div onClick={() => handleSort("found")} className="cursor-pointer flex items-center">
+            Type {renderSortIcon("found")}
+          </div>
+          <div className="ml-7">Status</div>
         </div>
-        <div onClick={() => handleSort("createdAt")} className="cursor-pointer flex items-center">
-          Time {renderSortIcon("createdAt")}
-        </div>
-        <div onClick={() => handleSort("date")} className="cursor-pointer flex items-center">
-          Date {renderSortIcon("date")}
-        </div>
-        <div onClick={() => handleSort("category")} className="cursor-pointer flex items-center">
-          Category {renderSortIcon("category")}
-        </div>
-        <div>Amount</div>
-        <div>Size</div>
-        <div>Color</div>
-        <div>Brand</div>
-        <div>Unique ID</div>
-        <div onClick={() => handleSort("found")} className="cursor-pointer flex items-center">
-          Type {renderSortIcon("found")}
-        </div>
-        <div>Edit</div>
-        <div>Status</div>
-      </div>
 
-      {/* Table Rows */}
-      <div className="divide-y divide-gray-700">
-        {sortedItems.map((item: Item, index: number) => {
-          const createdAt = new Date(item.createdAt);
-          const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-          const date = createdAt.toLocaleDateString();
+        {/* Table Rows */}
+        <div className="divide-y divide-gray-700">
+          {sortedItems.map((item: Item, index: number) => {
+            const createdAt = new Date(item.createdAt);
+            const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            const date = createdAt.toLocaleDateString();
 
-          const rawStatus = item.status?.toLowerCase() || "pending";
-          const statusLabel = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
-          const type = item.found ? "Found" : "Lost";
+            const rawStatus = item.status?.toLowerCase() || "pending";
+            const statusLabel = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
+            const type = item.found ? "Found" : "Lost";
 
-          return (
-            <div
-              key={item._id}
-              className="grid py-4 px-6 items-center hover:bg-gray-800 transition-colors text-gray-100 cursor-pointer"
-              style={gridStyle}
-              onClick={() => handleRowClick(item)}
-            >
-              <div className="col-span-2 flex items-center gap-3">
-                <img
-                  className="h-10 w-10 rounded-full object-cover"
-                  src={
-                    item.imageUrl
-                      ? getDisplayImageUrl(item.imageUrl)
-                      : "https://placehold.co/40x40/6366f1/ffffff?text=NA"
-                  }
-                  alt={item.category}
-                />
-                <div>
-                  <div className="text-sm font-medium text-gray-100">
-                    {item.firstName} {item.lastName}
+            return (
+              <div
+                key={item._id}
+                className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 items-center hover:bg-gray-800 transition-colors text-gray-100 cursor-pointer text-xs sm:text-sm"
+                onClick={() => handleRowClick(item)}
+              >
+                <div className="flex items-center gap-3">
+                  <img
+                    className="h-10 w-10 rounded-full object-cover"
+                    src={
+                      item.imageUrl
+                        ? getDisplayImageUrl(item.imageUrl)
+                        : "https://placehold.co/40x40/6366f1/ffffff?text=NA"
+                    }
+                    alt={item.category}
+                  />
+                  <div>
+                    <div className="font-medium text-gray-100">
+                      {item.firstName} {item.lastName}
+                    </div>
+                    <div className="text-xs text-gray-400">{item.email}</div>
+                    <div className="text-xs text-gray-400">{item.contactNumber}</div>
                   </div>
-                  <div className="text-xs text-gray-400">{item.email}</div>
-                  <div className="text-xs text-gray-400">{item.contactNumber}</div>
+                </div>
+
+                <div className="font-medium text-gray-100">{index + 1}</div>
+                <div className="font-medium text-gray-100">{time}</div>
+                <div className="text-gray-400">{date}</div>
+                <div className="text-gray-300">{item.category}</div>
+                <div className="text-gray-300">{item.moneyAmount ?? "-"}</div>
+                <div className="text-gray-300">{item.itemSize || "-"}</div>
+                <div className="text-gray-300">{item.itemColor || "-"}</div>
+                <div className="text-gray-300">{item.brandType || "-"}</div>
+                <div className="text-gray-300">{item.uniqueIdentifier || "-"}</div>
+                <div className="text-gray-300">{type}</div>
+                <div className="flex justify-center">
+                  <span
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      rawStatus === "pending"
+                        ? "bg-yellow-400 text-yellow-900"
+                        : rawStatus === "matched"
+                        ? "bg-blue-400 text-blue-900"
+                        : "bg-green-400 text-green-900"
+                    }`}
+                  >
+                    {statusLabel}
+                  </span>
                 </div>
               </div>
-
-              <div className="text-sm font-medium text-gray-100">{index + 1}</div>
-              <div className="text-sm font-medium text-gray-100">{time}</div>
-              <div className="text-xs text-gray-400">{date}</div>
-              <div className="text-xs text-gray-300">{item.category}</div>
-              <div className="text-xs text-gray-300">{item.moneyAmount ?? "-"}</div>
-              <div className="text-xs text-gray-300">{item.itemSize || "-"}</div>
-              <div className="text-xs text-gray-300">{item.itemColor || "-"}</div>
-              <div className="text-xs text-gray-300">{item.brandType || "-"}</div>
-              <div className="text-xs text-gray-300">{item.uniqueIdentifier || "-"}</div>
-              <div className="text-xs text-gray-300">{type}</div>
-              <div className="ml-5 text-sm font-medium text-blue-400 cursor-pointer hover:underline">
-                <Pencil size={18} />
-              </div>
-              <div className="flex justify-center">
-                <span
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    rawStatus === "pending"
-                      ? "bg-yellow-400 text-yellow-900"
-                      : rawStatus === "matched"
-                      ? "bg-blue-400 text-blue-900"
-                      : "bg-green-400 text-green-900"
-                  }`}
-                >
-                  {statusLabel}
-                </span>
-              </div>
-            </div>
-
-         
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* ✅ Item Details Modal */}
