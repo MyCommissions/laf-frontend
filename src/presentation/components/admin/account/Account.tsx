@@ -1,19 +1,35 @@
-import React, { useState, ChangeEvent } from 'react';
-import { Pencil, User as UserIcon, X } from 'lucide-react';
+import React, { useState, ChangeEvent, useEffect } from "react";
+import { Pencil, X } from "lucide-react";
+import { useAuthUser } from "../../../../domain/hooks/useCurrentUser"
 
-// Define the type for the user's role
-type UserRole = 'user' | 'admin';
+type UserRole = "user" | "admin";
 
 const Account: React.FC = () => {
-  const [username, setUsername] = useState('Your name');
-  const [email, setEmail] = useState('yourname@gmail.com');
-  const [mobile, setMobile] = useState('Add number');
-  const [password, setPassword] = useState('test');
-  const [profilePicture, setProfilePicture] = useState('https://placehold.co/100x100/3498db/FFFFFF?text=JD');
-  const [isEditing, setIsEditing] = useState(false);
-  const [role, setRole] = useState<UserRole>('user');
+  const { data: currentUser, isLoading, isError } = useAuthUser();
 
-  // Function to handle the image file upload
+  const [username, setUsername] = useState("Your name");
+  const [email, setEmail] = useState("yourname@gmail.com");
+  const [mobile, setMobile] = useState("Add number");
+  const [password, setPassword] = useState("test");
+  const [profilePicture, setProfilePicture] = useState(
+    "https://placehold.co/100x100/3498db/FFFFFF?text=JD"
+  );
+  const [isEditing, setIsEditing] = useState(false);
+  const [role, setRole] = useState<UserRole>("user");
+
+  // ✅ Populate the fields once currentUser is fetched
+  useEffect(() => {
+    if (currentUser) {
+      setUsername(currentUser.firstname + " " + currentUser.lastname || "Your name");
+      setEmail(currentUser.email || "yourname@gmail.com");
+      setRole(currentUser.role || "user");
+      if (currentUser.profile_picture) {
+        setProfilePicture(currentUser.profile_picture);
+      }
+    }
+  }, [currentUser]);
+
+  // ✅ Handle image upload (same as before)
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -25,46 +41,66 @@ const Account: React.FC = () => {
     }
   };
 
-  // Function to toggle between view and edit mode
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
+  const handleEditToggle = () => setIsEditing(!isEditing);
 
-  // Function to handle saving changes
   const handleSave = () => {
-    console.log('Saving profile data:', { username, email, mobile, password, role });
+    console.log("Saving profile data:", {
+      username,
+      email,
+      mobile,
+      password,
+      role,
+    });
     setIsEditing(false);
   };
-  
-  // Function to switch the role
-  const handleRoleSwitch = (newRole: UserRole) => {
-    setRole(newRole);
-  };
+
+  const handleRoleSwitch = (newRole: UserRole) => setRole(newRole);
+
+  // ✅ Loading and error handling (no design change)
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-500">
+        Loading account...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-red-500">
+        Failed to load user info.
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-lg bg-white rounded-3xl shadow-lg p-6">
-        {/* Tab-like role switcher at the top */}
+        {/* Role Tabs */}
         <div className="flex justify-between mb-6 border-b-2 border-gray-200">
           <div
             className={`cursor-pointer px-4 py-2 font-semibold transition-colors duration-200 ${
-              role === 'user' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500 hover:text-gray-700'
+              role === "user"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-500 hover:text-gray-700"
             }`}
-            onClick={() => handleRoleSwitch('user')}
+            onClick={() => handleRoleSwitch("user")}
           >
             User
           </div>
           <div
             className={`cursor-pointer px-4 py-2 font-semibold transition-colors duration-200 ${
-              role === 'admin' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500 hover:text-gray-700'
+              role === "admin"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-500 hover:text-gray-700"
             }`}
-            onClick={() => handleRoleSwitch('admin')}
+            onClick={() => handleRoleSwitch("admin")}
           >
             Admin
           </div>
         </div>
 
-        {/* Header and Profile Picture Section */}
+        {/* Header */}
         <div className="flex items-center space-x-4 mb-8">
           <div className="relative w-24 h-24">
             <img
@@ -88,7 +124,7 @@ const Account: React.FC = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-              {username} 
+              {username}
               <span className="text-xs ml-2 px-2 py-1 font-normal bg-gray-200 text-gray-700 rounded-full capitalize">
                 {role}
               </span>
@@ -99,10 +135,10 @@ const Account: React.FC = () => {
             <X size={24} />
           </div>
         </div>
-        
-        {/* Profile Details Section */}
+
+        {/* Profile Fields */}
         <div className="space-y-6">
-          {/* Name Field */}
+          {/* Name */}
           <div className="flex justify-between items-center border-b border-gray-200 pb-3">
             <div className="text-gray-600 font-medium">Name</div>
             <div className="flex items-center">
@@ -116,13 +152,16 @@ const Account: React.FC = () => {
               ) : (
                 <span className="text-gray-800">{username}</span>
               )}
-              <button onClick={handleEditToggle} className="ml-2 text-gray-400 hover:text-gray-600">
+              <button
+                onClick={handleEditToggle}
+                className="ml-2 text-gray-400 hover:text-gray-600"
+              >
                 <Pencil size={16} />
               </button>
             </div>
           </div>
 
-          {/* Email Field */}
+          {/* Email */}
           <div className="flex justify-between items-center border-b border-gray-200 pb-3">
             <div className="text-gray-600 font-medium">Email account</div>
             <div className="flex items-center">
@@ -136,13 +175,16 @@ const Account: React.FC = () => {
               ) : (
                 <span className="text-gray-800">{email}</span>
               )}
-              <button onClick={handleEditToggle} className="ml-2 text-gray-400 hover:text-gray-600">
+              <button
+                onClick={handleEditToggle}
+                className="ml-2 text-gray-400 hover:text-gray-600"
+              >
                 <Pencil size={16} />
               </button>
             </div>
           </div>
 
-          {/* Mobile Number Field */}
+          {/* Mobile */}
           <div className="flex justify-between items-center border-b border-gray-200 pb-3">
             <div className="text-gray-600 font-medium">Mobile number</div>
             <div className="flex items-center">
@@ -156,13 +198,16 @@ const Account: React.FC = () => {
               ) : (
                 <span className="text-gray-800">{mobile}</span>
               )}
-              <button onClick={handleEditToggle} className="ml-2 text-gray-400 hover:text-gray-600">
+              <button
+                onClick={handleEditToggle}
+                className="ml-2 text-gray-400 hover:text-gray-600"
+              >
                 <Pencil size={16} />
               </button>
             </div>
           </div>
-          
-          {/* Password Field */}
+
+          {/* Password */}
           <div className="flex justify-between items-center border-b border-gray-200 pb-3">
             <div className="text-gray-600 font-medium">Password</div>
             <div className="flex items-center">
@@ -174,14 +219,16 @@ const Account: React.FC = () => {
                   className="text-right border-none focus:ring-0 focus:outline-none"
                 />
               ) : (
-                <span className="text-gray-800">{password}</span>
+                <span className="text-gray-800">••••••••</span>
               )}
-              <button onClick={handleEditToggle} className="ml-2 text-gray-400 hover:text-gray-600">
+              <button
+                onClick={handleEditToggle}
+                className="ml-2 text-gray-400 hover:text-gray-600"
+              >
                 <Pencil size={16} />
               </button>
             </div>
           </div>
-
         </div>
 
         {/* Save Button */}

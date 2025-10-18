@@ -64,18 +64,18 @@ const router = createBrowserRouter([
         {
         path: '/admin/home',
         element: (
-            <ProtectedRoute>
+            <AdminProtectedRoute>
                 <pages.AdminHomePage /> 
-            </ProtectedRoute>
+            </AdminProtectedRoute>
         ),
     },
 
     {
         path: '/admin/account',
         element: (
-            <ProtectedRoute>
+            <AdminProtectedRoute>
                 <pages.AdminAccountPage /> 
-            </ProtectedRoute>
+            </AdminProtectedRoute>
         ),
     },
 
