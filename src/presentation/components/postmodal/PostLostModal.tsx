@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, Camera, X } from "lucide-react";
-import FoundModal from "../thankyoumodal/FoundModal";
-import { useCreateFoundItem } from "../../../domain/hooks/useItems";
+import { useCreateLostItem } from "../../../domain/hooks/useItems";
 import { CATEGORIES } from "../../../data/models/Item";
-import { useQueryClient } from "@tanstack/react-query";
+import LostModal from "../thankyoumodal/LostModal";
 
 const categories: string[] = ["Select Category", ...CATEGORIES, "Keys"];
 const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"];
@@ -32,9 +31,9 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
   const [moneyAmount, setMoneyAmount] = useState<string>("");
   const [remarks, setRemarks] = useState("");
   const [uniqueIdentifier, setUniqueIdentifier] = useState("");
-  const [isFoundModalOpen, setIsFoundModalOpen] = useState(false);
+  const [isLostModalOpen, setIsLostModalOpen] = useState(false);
 
-  const { mutate: createFoundItem, isPending } = useCreateFoundItem();
+  const { mutate: createLostItem, isPending } = useCreateLostItem();
 
   useEffect(() => {
     if (isCameraOpen) {
@@ -113,38 +112,48 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
     return false;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!image) return;
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
-    formData.append("contactNumber", contactNumber);
-    formData.append("email", email);
-    formData.append(
-      "category",
-      selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others"
-    );
-    if (selectedColor && selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
-    if (selectedSize && selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
-    if (brandType) formData.append("brandType", brandType);
-    if (moneyAmount) formData.append("moneyAmount", moneyAmount);
-    if (remarks) formData.append("remarks", remarks);
-    if (uniqueIdentifier) formData.append("uniqueIdentifier", uniqueIdentifier);
-    formData.append("found", "true");
-    formData.append("claimed", "false");
-    formData.append("placeFound", "Campus");
 
-    createFoundItem(formData, {
-      onSuccess: () => {
-        resetForm();
-        setIsFoundModalOpen(true);
-        setTimeout(() => {
-          setIsFoundModalOpen(false);
-          onClose();
-        }, 1500);
-      },
-    });
+    try {
+      // Convert Base64 image to Blob for upload
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const file = new File([blob], "captured-image.png", { type: "image/png" });
+
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("contactNumber", contactNumber);
+      formData.append("email", email);
+      formData.append(
+        "category",
+        selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others"
+      );
+      if (selectedColor && selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
+      if (selectedSize && selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
+      if (brandType) formData.append("brandType", brandType);
+      if (moneyAmount) formData.append("moneyAmount", moneyAmount);
+      if (remarks) formData.append("remarks", remarks);
+      if (uniqueIdentifier) formData.append("uniqueIdentifier", uniqueIdentifier);
+      formData.append("found", "true");
+      formData.append("claimed", "false");
+      formData.append("placeFound", "Campus");
+
+      createLostItem(formData, {
+        onSuccess: () => {
+          resetForm();
+          setIsLostModalOpen(true);
+          setTimeout(() => {
+            setIsLostModalOpen(false);
+            onClose();
+          }, 1500);
+        },
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   };
 
   return (
