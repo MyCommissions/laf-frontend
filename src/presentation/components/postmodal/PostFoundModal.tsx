@@ -113,38 +113,50 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
     return false;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!image) return;
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
-    formData.append("contactNumber", contactNumber);
-    formData.append("email", email);
-    formData.append(
-      "category",
-      selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others"
-    );
-    if (selectedColor && selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
-    if (selectedSize && selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
-    if (brandType) formData.append("brandType", brandType);
-    if (moneyAmount) formData.append("moneyAmount", moneyAmount);
-    if (remarks) formData.append("remarks", remarks);
-    if (uniqueIdentifier) formData.append("uniqueIdentifier", uniqueIdentifier);
-    formData.append("found", "true");
-    formData.append("claimed", "false");
-    formData.append("placeFound", "Campus");
 
-    createFoundItem(formData, {
-      onSuccess: () => {
-        resetForm();
-        setIsFoundModalOpen(true);
-        setTimeout(() => {
-          setIsFoundModalOpen(false);
-          onClose();
-        }, 1500);
-      },
-    });
+    try {
+      // Convert base64 image to Blob
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const file = new File([blob], "captured-image.png", { type: "image/png" });
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("contactNumber", contactNumber);
+      formData.append("email", email);
+      formData.append(
+        "category",
+        selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others"
+      );
+      if (selectedColor && selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
+      if (selectedSize && selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
+      if (brandType) formData.append("brandType", brandType);
+      if (moneyAmount) formData.append("moneyAmount", moneyAmount);
+      if (remarks) formData.append("remarks", remarks);
+      if (uniqueIdentifier) formData.append("uniqueIdentifier", uniqueIdentifier);
+      formData.append("found", "true");
+      formData.append("claimed", "false");
+      formData.append("placeFound", "Campus");
+
+      // Call mutation
+      createFoundItem(formData, {
+        onSuccess: () => {
+          resetForm();
+          setIsFoundModalOpen(true);
+          setTimeout(() => {
+            setIsFoundModalOpen(false);
+            onClose();
+          }, 1500);
+        },
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   };
 
   return (
