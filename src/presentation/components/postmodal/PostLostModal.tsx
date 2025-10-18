@@ -417,7 +417,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 >
                   {isPending ? "Posting..." : "REPORT"}
                 </button>
-                <LostModal open={isLostModalOpen} onClose={() => setIsLostModalOpen(false)} />
+                <FoundModal open={isFoundModalOpen} onClose={() => setIsFoundModalOpen(false)} />
               </div>
             </div>
           </div>
