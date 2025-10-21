@@ -5,7 +5,7 @@ import {
   createLostItem,
   createFoundItem,
 } from "../usecases/itemUseCases";
-import { getMatchedAndPendingItems } from "../usecases/matchedItemUseCases";
+import { getClaimedItems, getMatchedAndPendingItems } from "../usecases/matchedItemUseCases";
 import type {
   CreateItemRequest,
   CreateItemResponse,
@@ -45,5 +45,12 @@ export function useCreateFoundItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
     },
+  });
+}
+
+export function useGetClaimedItems() {
+  return useQuery<Item[], Error>({
+    queryKey: ["claimed-items"],
+    queryFn: getClaimedItems,
   });
 }

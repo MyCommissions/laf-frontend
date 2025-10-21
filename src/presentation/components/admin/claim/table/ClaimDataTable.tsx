@@ -1,78 +1,14 @@
 "use client";
-
 import React, { useState, useMemo } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import type { Item } from "../../../../../data/models/Item";
+import { getDisplayImageUrl } from "../../../../../utils/imageHelper";
 
-interface Item {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  contactNumber: string;
-  category: string;
-  moneyAmount?: number;
-  itemSize?: string;
-  itemColor?: string;
-  brandType?: string;
-  uniqueIdentifier?: string;
-  found?: boolean;
-  imageUrl?: string;
-  createdAt: string;
-  status?: string;
+interface ClaimDataTableProps {
+  items: Item[];
 }
 
-// ✅ Dummy Data
-const dummyItems: Item[] = [
-  {
-    _id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-    contactNumber: "09123456789",
-    category: "Wallet",
-    moneyAmount: 500,
-    itemSize: "Medium",
-    itemColor: "Brown",
-    brandType: "Levis",
-    uniqueIdentifier: "A12345",
-    found: true,
-    imageUrl: "https://placehold.co/40x40/10B981/ffffff?text=JD",
-    createdAt: new Date().toISOString(),
-    status: "claimed",
-  },
-  {
-    _id: "2",
-    firstName: "Jane",
-    lastName: "Smith",
-    email: "jane@example.com",
-    contactNumber: "09876543210",
-    category: "Umbrella",
-    itemSize: "Large",
-    itemColor: "Black",
-    brandType: "Samsonite",
-    uniqueIdentifier: "B67890",
-    found: false,
-    imageUrl: "https://placehold.co/40x40/10B981/ffffff?text=JS",
-    createdAt: new Date().toISOString(),
-    status: "claimed",
-  },
-  {
-    _id: "3",
-    firstName: "Carlos",
-    lastName: "Reyes",
-    email: "carlos@example.com",
-    contactNumber: "09234567891",
-    category: "Phone",
-    brandType: "Samsung",
-    uniqueIdentifier: "C54321",
-    found: true,
-    imageUrl: "https://placehold.co/40x40/10B981/ffffff?text=CR",
-    createdAt: new Date().toISOString(),
-    status: "claimed",
-  },
-];
-
-const ClaimDataTable: React.FC = () => {
+const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Item | "date" | null;
     direction: "asc" | "desc";
@@ -86,14 +22,11 @@ const ClaimDataTable: React.FC = () => {
   };
 
   const sortedItems = useMemo(() => {
-    if (!sortConfig.key) return dummyItems;
-
-    const key = sortConfig.key as keyof Item | "date";
-
-    return [...dummyItems].sort((a, b) => {
+    if (!sortConfig.key) return items;
+    const key = sortConfig.key;
+    return [...items].sort((a, b) => {
       let aValue: any = "";
       let bValue: any = "";
-
       if (key === "date") {
         aValue = new Date(a.createdAt).getTime();
         bValue = new Date(b.createdAt).getTime();
@@ -101,12 +34,11 @@ const ClaimDataTable: React.FC = () => {
         aValue = a[key] ?? "";
         bValue = b[key] ?? "";
       }
-
       if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
       if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
       return 0;
     });
-  }, [sortConfig]);
+  }, [items, sortConfig]);
 
   const renderSortIcon = (key: keyof Item | "date") => {
     if (sortConfig.key !== key)
@@ -118,11 +50,33 @@ const ClaimDataTable: React.FC = () => {
     );
   };
 
+  const getStatusDisplay = (status?: string) => {
+    let bgClass = "";
+    let label = "";
+    if (status?.toLowerCase() === "claimed") {
+      bgClass = "bg-green-500";
+      label = "Claimed";
+    } else if (status?.toLowerCase() === "pending") {
+      bgClass = "bg-yellow-500";
+      label = "Pending";
+    } else {
+      bgClass = "bg-gray-500";
+      label = "Unknown";
+    }
+    return (
+      <span
+        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${bgClass} text-white`}
+      >
+        {label}
+      </span>
+    );
+  };
+
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
       <div className="min-w-[1000px]">
-        {/* Table Header */}
-        <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 border-b border-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-200 select-none">
+        {/* Header */}
+        <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 border-b border-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-200">
           <div className="col-span-1" />
           <div onClick={() => handleSort("_id")} className="cursor-pointer flex items-center">
             Item No. {renderSortIcon("_id")}
@@ -133,9 +87,7 @@ const ClaimDataTable: React.FC = () => {
           <div onClick={() => handleSort("date")} className="cursor-pointer flex items-center">
             Date {renderSortIcon("date")}
           </div>
-          <div onClick={() => handleSort("category")} className="cursor-pointer flex items-center">
-            Category {renderSortIcon("category")}
-          </div>
+          <div>Category</div>
           <div>Amount</div>
           <div>Size</div>
           <div>Color</div>
@@ -144,12 +96,21 @@ const ClaimDataTable: React.FC = () => {
           <div className="ml-7">Status</div>
         </div>
 
-        {/* Table Rows */}
+        {/* Rows */}
         <div className="divide-y divide-gray-700">
-          {sortedItems.map((item: Item, index: number) => {
+          {sortedItems.map((item, index) => {
+            const displayItem = item.foundItem || item.lostItem || item;
             const createdAt = new Date(item.createdAt);
-            const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            const time = createdAt.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
             const date = createdAt.toLocaleDateString();
+
+            const imageUrl =
+              getDisplayImageUrl(displayItem.imageUrl) ||
+              getDisplayImageUrl(displayItem.claimInfo?.imageUuid) ||
+              "https://placehold.co/40x40/0f172a/ffffff?text=?";
 
             return (
               <div
@@ -159,33 +120,39 @@ const ClaimDataTable: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <img
                     className="h-10 w-10 rounded-full object-cover"
-                    src={item.imageUrl}
-                    alt={item.category}
+                    src={imageUrl}
+                    alt={displayItem.category}
                   />
                   <div>
                     <div className="font-medium text-gray-100">
-                      {item.firstName} {item.lastName}
+                      {displayItem.firstName} {displayItem.lastName}
                     </div>
-                    <div className="text-xs text-gray-400">{item.email}</div>
-                    <div className="text-xs text-gray-400">{item.contactNumber}</div>
+                    <div className="text-xs text-gray-400">
+                      {displayItem.email}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {displayItem.contactNumber}
+                    </div>
                   </div>
                 </div>
 
                 <div className="font-medium text-gray-100">{index + 1}</div>
                 <div className="font-medium text-gray-100">{time}</div>
                 <div className="text-gray-400">{date}</div>
-                <div className="text-gray-300">{item.category}</div>
-                <div className="text-gray-300">{item.moneyAmount ?? "-"}</div>
-                <div className="text-gray-300">{item.itemSize || "-"}</div>
-                <div className="text-gray-300">{item.itemColor || "-"}</div>
-                <div className="text-gray-300">{item.brandType || "-"}</div>
-                <div className="text-gray-300">{item.uniqueIdentifier || "-"}</div>
-
-                {/* ✅ Claimed Status (Green) */}
+                <div className="text-gray-300">{displayItem.category}</div>
+                <div className="text-gray-300">
+                  {displayItem.moneyAmount ?? "-"}
+                </div>
+                <div className="text-gray-300">{displayItem.itemSize || "-"}</div>
+                <div className="text-gray-300">
+                  {displayItem.itemColor || "-"}
+                </div>
+                <div className="text-gray-300">{displayItem.brandType || "-"}</div>
+                <div className="text-gray-300">
+                  {displayItem.uniqueIdentifier || "-"}
+                </div>
                 <div className="flex justify-center">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-green-900">
-                    Claimed
-                  </span>
+                  {getStatusDisplay(item.status)}
                 </div>
               </div>
             );

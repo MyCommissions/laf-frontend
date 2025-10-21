@@ -1,6 +1,7 @@
 // src/data/repositories/item.repository.ts
 import {
   claimMatchedItemApi,
+  getClaimedItemsApi,
   getMatchedAndPendingItemsApi,
 } from "../api/matchedItem.api";
 import type {
@@ -20,5 +21,8 @@ export const matchedItemRepository = {
     payload: ClaimMatchedItemRequest | FormData
   ): Promise<ClaimMatchedItemResponse> => {
     return await claimMatchedItemApi(id, payload);
+  },
+  getClaimedItems: async (): Promise<Item[]> => {
+    return await getClaimedItemsApi();
   },
 };
