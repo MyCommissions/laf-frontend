@@ -17,3 +17,7 @@ export const claimMatchedItem = async (
 ): Promise<ClaimMatchedItemResponse> => {
   return await matchedItemRepository.claimMatchedItem(id, payload);
 };
+
+export const getClaimedItems = async (): Promise<Item[]> => {
+  return await matchedItemRepository.getClaimedItems();
+};
