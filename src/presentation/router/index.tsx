@@ -74,7 +74,7 @@ const router = createBrowserRouter([
         path: '/admin/claimed',
         element: (
             <AdminProtectedRoute>
-                <pages.AdminHomePage /> 
+                <pages.AdminClaimPage /> 
             </AdminProtectedRoute>
         ),
     },

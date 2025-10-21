@@ -7,6 +7,7 @@ import ContactPage from "../pages/ContactPage";
 import AboutUsPage from "../pages/AboutPage";
 
 import AdminHomePage from "../pages/AdminHomePage";
+import AdminClaimPage from "../pages/AdminClaimPage";
 import AdminAccountPage from "../pages/AdminAccountPage";
 
 export const pages = {
@@ -19,5 +20,6 @@ export const pages = {
   AboutUsPage,
 
   AdminHomePage,
+  AdminClaimPage,
   AdminAccountPage,
 };
