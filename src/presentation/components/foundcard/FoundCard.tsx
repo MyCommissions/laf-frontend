@@ -112,7 +112,7 @@ const FoundCard: React.FC<LostItemCardProps> = ({
       />
 
       {/* Claim Modal */}
-      {isClaimOpen && <ClaimModal onClose={() => setIsClaimOpen(false)} />}
+      <ClaimModal onClose={() => setIsClaimOpen(false)} open={isClaimOpen} matchedItemId={id} />
     </div>
   );
 };
