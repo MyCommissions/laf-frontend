@@ -5,6 +5,7 @@ import { useCreateLostItem } from "../../../domain/hooks/useItems";
 import { CATEGORIES } from "../../../data/models/Item";
 import LostModal from "../thankyoumodal/LostModal";
 
+
 const categories: string[] = ["Select Category", ...CATEGORIES, "Keys"];
 const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"];
 const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
@@ -417,7 +418,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 >
                   {isPending ? "Posting..." : "REPORT"}
                 </button>
-                <FoundModal open={isFoundModalOpen} onClose={() => setIsFoundModalOpen(false)} />
+                <LostModal open={isLostModalOpen} onClose={() => setIsLostModalOpen(false)} />
               </div>
             </div>
           </div>

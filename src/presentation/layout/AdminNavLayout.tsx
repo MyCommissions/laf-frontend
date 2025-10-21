@@ -8,7 +8,7 @@ const navLinks = [
   { name: "Records", href: "/admin/home" },
   // { name: "Lost", href: "/lost" },
   // { name: "Found", href: "/found" },
-  { name: "Claimed", href: "/claimed" },
+  { name: "Claimed", href: "/admin/claimed" },
   { name: "Account", href: "/admin/account" },
 ];
 
