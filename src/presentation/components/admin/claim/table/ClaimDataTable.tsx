@@ -74,9 +74,9 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
 
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
-      <div className="min-w-[1000px]">
+      <div className="min-w-[1100px]">
         {/* Header */}
-        <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 border-b border-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-200">
+        <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 border-b border-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-200">
           <div className="col-span-1" />
           <div onClick={() => handleSort("_id")} className="cursor-pointer flex items-center">
             Item No. {renderSortIcon("_id")}
@@ -87,6 +87,10 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
           <div onClick={() => handleSort("date")} className="cursor-pointer flex items-center">
             Date {renderSortIcon("date")}
           </div>
+
+          {/* ✅ NEW COLUMN */}
+          <div>Type</div>
+
           <div>Category</div>
           <div>Amount</div>
           <div>Size</div>
@@ -112,10 +116,15 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
               getDisplayImageUrl(displayItem.claimInfo?.imageUuid) ||
               "https://placehold.co/40x40/0f172a/ffffff?text=?";
 
+            // ✅ Determine item type (found/lost/matched/standalone)
+            const itemType =
+              displayItem.type ||
+              (item.foundItem ? "found" : item.lostItem ? "lost" : "unknown");
+
             return (
               <div
                 key={item._id}
-                className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 items-center hover:bg-gray-800 transition-colors text-gray-100 cursor-pointer text-xs sm:text-sm"
+                className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 items-center hover:bg-gray-800 transition-colors text-gray-100 cursor-pointer text-xs sm:text-sm"
               >
                 <div className="flex items-center gap-3">
                   <img
@@ -139,14 +148,16 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
                 <div className="font-medium text-gray-100">{index + 1}</div>
                 <div className="font-medium text-gray-100">{time}</div>
                 <div className="text-gray-400">{date}</div>
+
+                {/* ✅ Show the item type */}
+                <div className="text-gray-300 capitalize">{itemType}</div>
+
                 <div className="text-gray-300">{displayItem.category}</div>
                 <div className="text-gray-300">
                   {displayItem.moneyAmount ?? "-"}
                 </div>
                 <div className="text-gray-300">{displayItem.itemSize || "-"}</div>
-                <div className="text-gray-300">
-                  {displayItem.itemColor || "-"}
-                </div>
+                <div className="text-gray-300">{displayItem.itemColor || "-"}</div>
                 <div className="text-gray-300">{displayItem.brandType || "-"}</div>
                 <div className="text-gray-300">
                   {displayItem.uniqueIdentifier || "-"}
