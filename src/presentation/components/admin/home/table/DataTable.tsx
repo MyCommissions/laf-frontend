@@ -69,7 +69,7 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
   return (
     <div className="bg-[#0f172a] rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
       <div className="min-w-[1000px]">
-        {/* Table Header */}
+        {/* ✅ Table Header (Type moved after Date) */}
         <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] py-4 px-4 border-b border-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-200 select-none">
           <div className="col-span-1" />
           <div onClick={() => handleSort("_id")} className="cursor-pointer flex items-center">
@@ -81,6 +81,12 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
           <div onClick={() => handleSort("date")} className="cursor-pointer flex items-center">
             Date {renderSortIcon("date")}
           </div>
+
+          {/* ✅ Type column moved here */}
+          <div onClick={() => handleSort("found")} className="cursor-pointer flex items-center">
+            Type {renderSortIcon("found")}
+          </div>
+
           <div onClick={() => handleSort("category")} className="cursor-pointer flex items-center">
             Category {renderSortIcon("category")}
           </div>
@@ -89,13 +95,10 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
           <div>Color</div>
           <div>Brand</div>
           <div>Unique ID</div>
-          <div onClick={() => handleSort("found")} className="cursor-pointer flex items-center">
-            Type {renderSortIcon("found")}
-          </div>
           <div className="ml-7">Status</div>
         </div>
 
-        {/* Table Rows */}
+        {/* ✅ Table Rows */}
         <div className="divide-y divide-gray-700">
           {sortedItems.map((item: Item, index: number) => {
             const createdAt = new Date(item.createdAt);
@@ -134,13 +137,17 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
                 <div className="font-medium text-gray-100">{index + 1}</div>
                 <div className="font-medium text-gray-100">{time}</div>
                 <div className="text-gray-400">{date}</div>
+
+                {/* ✅ Type moved here */}
+                <div className="text-gray-300">{type}</div>
+
                 <div className="text-gray-300">{item.category}</div>
                 <div className="text-gray-300">{item.moneyAmount ?? "-"}</div>
                 <div className="text-gray-300">{item.itemSize || "-"}</div>
                 <div className="text-gray-300">{item.itemColor || "-"}</div>
                 <div className="text-gray-300">{item.brandType || "-"}</div>
                 <div className="text-gray-300">{item.uniqueIdentifier || "-"}</div>
-                <div className="text-gray-300">{type}</div>
+
                 <div className="flex justify-center">
                   <span
                     className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${

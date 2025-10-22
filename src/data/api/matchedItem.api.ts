@@ -30,3 +30,9 @@ export const claimMatchedItemApi = async (
 
   return data;
 };
+
+export const getClaimedItemsApi = async (): Promise<Item[]> => {
+  const { data } = await client.get("/item/claimed");
+  // backend returns { items: [...] } or just [...]
+  return data.items ?? data;
+};
