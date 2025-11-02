@@ -170,11 +170,11 @@ const DataTable: React.FC<DataTableProps> = ({ items }) => {
       {/* ✅ Item Details Modal */}
       {selectedItem && (
         <TableItemDetailsModal
-          item={selectedItem}
-          onClose={() => setSelectedItem(null)}
-          onEdit={(item: Item) => console.log("Edit:", item)}
-          onDelete={(id: string) => console.log("Delete:", id)}
-        />
+  item={selectedItem}
+  onClose={() => setSelectedItem(null)}
+  onUpdate={(item: Item) => console.log("Updated:", item)}  
+  onDelete={(id: string) => console.log("Delete:", id)}
+/>
       )}
     </div>
   );
