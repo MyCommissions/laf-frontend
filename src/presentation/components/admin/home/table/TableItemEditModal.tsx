@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
 import { getDisplayImageUrl } from "../../../../../utils/imageHelper";
+import { useUpdateItem } from "../../../../../domain/hooks/useItems";
+import { toast } from "sonner";
 
 interface EditModalProps {
   item: Item;
@@ -13,41 +15,50 @@ interface EditModalProps {
 
 const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave }) => {
   const [formData, setFormData] = useState<Item>({ ...item });
-  const [isSaving, setIsSaving] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    getDisplayImageUrl(item.imageUrl)
+  );
+  const [newImage, setNewImage] = useState<File | null>(null);
+
+  const { mutate: updateItem, isPending } = useUpdateItem();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
-    setIsSaving(true);
-    try {
-      const response = await fetch(`/api/items/${item._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error("Failed to update item");
-
-      const updatedItem = await response.json();
-      onSave(updatedItem);
-      onClose();
-    } catch (error) {
-      console.error("❌ Error updating item:", error);
-    } finally {
-      setIsSaving(false);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewImage(file);
+      setImagePreview(URL.createObjectURL(file));
     }
+  };
+
+  const handleSubmit = () => {
+    const updatedData: Partial<Item> & { image?: File } = {
+      ...formData,
+      image: newImage ?? undefined,
+    };
+
+    updateItem(
+      { id: formData._id, updatedData },
+      {
+        onSuccess: (updatedItem) => {
+          toast.success("✅ Item updated successfully!");
+          onSave(updatedItem);
+          onClose();
+        },
+        onError: (err) => {
+          toast.error(`❌ Failed to update item: ${err.message}`);
+        },
+      }
+    );
   };
 
   const createdAt = new Date(item.createdAt);
   const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const date = createdAt.toLocaleDateString();
-
-  const finalImageSrc = getDisplayImageUrl(item.imageUrl);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-sans">
@@ -69,15 +80,24 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
         <div className="flex gap-8">
           {/* Left Side - Image */}
           <div className="flex-shrink-0">
-            <img
-              src={
-                finalImageSrc
-                  ? finalImageSrc
-                  : "https://placehold.co/180x180/6366f1/ffffff?text=No+Image"
-              }
-              alt={item.category}
-              className="w-48 h-48 rounded-lg object-cover border border-gray-300"
-            />
+            <label htmlFor="image-upload" className="cursor-pointer">
+              <img
+                src={
+                  imagePreview
+                    ? imagePreview
+                    : "https://placehold.co/180x180/6366f1/ffffff?text=No+Image"
+                }
+                alt={item.category}
+                className="w-48 h-48 rounded-lg object-cover border border-gray-300"
+              />
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </label>
           </div>
 
           {/* Right Side - Editable Fields */}
@@ -135,14 +155,14 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
           </button>
           <button
             onClick={handleSubmit}
-            disabled={isSaving}
+            disabled={isPending}
             className={`px-5 py-2 rounded-md font-medium text-white transition ${
-              isSaving
+              isPending
                 ? "bg-blue-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {isSaving ? "Saving..." : "Save Changes"}
+            {isPending ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>

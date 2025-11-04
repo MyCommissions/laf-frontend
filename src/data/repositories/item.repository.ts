@@ -4,6 +4,7 @@ import {
   createFoundItemApi,
   getItemsApi,
   getFoundItemsApi,
+  updateItemApi,
 } from "../api/item.api";
 import type {
   CreateItemRequest,
@@ -27,5 +28,8 @@ export const itemRepository = {
     newItem: CreateItemRequest | FormData
   ): Promise<CreateItemResponse> => {
     return await createFoundItemApi(newItem);
+  },
+  updateItem: async (id: string, updatedData: Partial<Item>): Promise<Item> => {
+    return await updateItemApi(id, updatedData);
   },
 };
