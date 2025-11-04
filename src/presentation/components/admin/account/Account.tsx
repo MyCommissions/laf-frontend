@@ -1,35 +1,81 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
-import { Pencil, X } from "lucide-react";
-import { useAuthUser } from "../../../../domain/hooks/useCurrentUser"
+import { Pencil, X, Eye, EyeOff } from "lucide-react";
+import { useAuthUser } from "../../../../domain/hooks/useCurrentUser";
 
 type UserRole = "user" | "admin";
+
+interface UserInfo {
+  firstname: string;
+  lastname: string;
+  email: string;
+  mobile: string;
+  password: string;
+  profile_picture: string;
+  role: UserRole;
+}
 
 const Account: React.FC = () => {
   const { data: currentUser, isLoading, isError } = useAuthUser();
 
+  // ✅ Dummy data for demonstration (user/admin)
+  const dummyUser: UserInfo = {
+    firstname: "John",
+    lastname: "Doe",
+    email: "john.doe@example.com",
+    mobile: "+639123456789",
+    password: "user12345",
+    profile_picture: "https://placehold.co/100x100/3498db/FFFFFF?text=JD",
+    role: "user",
+  };
+
+  const dummyAdmin: UserInfo = {
+    firstname: "Admin",
+    lastname: "Smith",
+    email: "admin.smith@example.com",
+    mobile: "+639876543210",
+    password: "admin54321",
+    profile_picture: "https://placehold.co/100x100/f59e0b/FFFFFF?text=AD",
+    role: "admin",
+  };
+
+  // ✅ States
   const [username, setUsername] = useState("Your name");
   const [email, setEmail] = useState("yourname@gmail.com");
   const [mobile, setMobile] = useState("Add number");
   const [password, setPassword] = useState("test");
+  const [showPassword, setShowPassword] = useState(false);
   const [profilePicture, setProfilePicture] = useState(
     "https://placehold.co/100x100/3498db/FFFFFF?text=JD"
   );
   const [isEditing, setIsEditing] = useState(false);
   const [role, setRole] = useState<UserRole>("user");
 
-  // ✅ Populate the fields once currentUser is fetched
+  // ✅ Automatically populate fields from currentUser or dummy
   useEffect(() => {
     if (currentUser) {
-      setUsername(currentUser.firstname + " " + currentUser.lastname || "Your name");
+      setUsername(`${currentUser.firstname} ${currentUser.lastname}` || "Your name");
       setEmail(currentUser.email || "yourname@gmail.com");
       setRole(currentUser.role || "user");
       if (currentUser.profile_picture) {
         setProfilePicture(currentUser.profile_picture);
       }
+    } else {
+      // Default dummy user data
+      populateData(dummyUser);
     }
   }, [currentUser]);
 
-  // ✅ Handle image upload (same as before)
+  // ✅ Function to populate account info
+  const populateData = (data: UserInfo) => {
+    setUsername(`${data.firstname} ${data.lastname}`);
+    setEmail(data.email);
+    setMobile(data.mobile);
+    setPassword(data.password);
+    setProfilePicture(data.profile_picture);
+    setRole(data.role);
+  };
+
+  // ✅ Handle image upload
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -41,8 +87,8 @@ const Account: React.FC = () => {
     }
   };
 
+  // ✅ Edit toggle and save
   const handleEditToggle = () => setIsEditing(!isEditing);
-
   const handleSave = () => {
     console.log("Saving profile data:", {
       username,
@@ -54,9 +100,14 @@ const Account: React.FC = () => {
     setIsEditing(false);
   };
 
-  const handleRoleSwitch = (newRole: UserRole) => setRole(newRole);
+  // ✅ Switch between User and Admin
+  const handleRoleSwitch = (newRole: UserRole) => {
+    setRole(newRole);
+    if (newRole === "user") populateData(dummyUser);
+    else populateData(dummyAdmin);
+  };
 
-  // ✅ Loading and error handling (no design change)
+  // ✅ Loading & Error (unchanged)
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen text-gray-500">
@@ -152,12 +203,6 @@ const Account: React.FC = () => {
               ) : (
                 <span className="text-gray-800">{username}</span>
               )}
-              <button
-                onClick={handleEditToggle}
-                className="ml-2 text-gray-400 hover:text-gray-600"
-              >
-                <Pencil size={16} />
-              </button>
             </div>
           </div>
 
@@ -175,12 +220,6 @@ const Account: React.FC = () => {
               ) : (
                 <span className="text-gray-800">{email}</span>
               )}
-              <button
-                onClick={handleEditToggle}
-                className="ml-2 text-gray-400 hover:text-gray-600"
-              >
-                <Pencil size={16} />
-              </button>
             </div>
           </div>
 
@@ -198,47 +237,35 @@ const Account: React.FC = () => {
               ) : (
                 <span className="text-gray-800">{mobile}</span>
               )}
-              <button
-                onClick={handleEditToggle}
-                className="ml-2 text-gray-400 hover:text-gray-600"
-              >
-                <Pencil size={16} />
-              </button>
             </div>
           </div>
 
           {/* Password */}
           <div className="flex justify-between items-center border-b border-gray-200 pb-3">
             <div className="text-gray-600 font-medium">Password</div>
-            <div className="flex items-center">
+            <div className="flex items-center space-x-2">
               {isEditing ? (
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="text-right border-none focus:ring-0 focus:outline-none"
                 />
               ) : (
-                <span className="text-gray-800">••••••••</span>
+                <span className="text-gray-800">
+                  {showPassword ? password : "••••••••"}
+                </span>
               )}
+
+              {/* 👁️ Toggle password visibility */}
               <button
-                onClick={handleEditToggle}
-                className="ml-2 text-gray-400 hover:text-gray-600"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-400 hover:text-gray-600"
               >
-                <Pencil size={16} />
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Save Button */}
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={handleSave}
-            className="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md transition-colors hover:bg-blue-600"
-          >
-            Save Change
-          </button>
         </div>
       </div>
     </div>
