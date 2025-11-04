@@ -1,11 +1,12 @@
 
 import NavLayout from "../layout/NavLayout"
-import HomeLayout from "../layout/HomeLayout"
+import FoundTab from "../components/foundtab/FoundTab"
+
 
 export default function HomePage() {
   return (
     <NavLayout>
-        <HomeLayout/>
+        <FoundTab/>
     </NavLayout>
   )
 }
