@@ -11,15 +11,17 @@ interface EditModalProps {
   item: Item;
   onClose: () => void;
   onSave: (updatedItem: Item) => void;
+  refreshTable: () => void;
 }
 
-const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave }) => {
+const TableItemEditModal: React.FC<EditModalProps> = ({
+  item,
+  onClose,
+  onSave,
+  refreshTable,
+}) => {
   const [formData, setFormData] = useState<Item>({ ...item });
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    getDisplayImageUrl(item.imageUrl)
-  );
-  const [newImage, setNewImage] = useState<File | null>(null);
-
+  const imagePreview = getDisplayImageUrl(item.imageUrl);
   const { mutate: updateItem, isPending } = useUpdateItem();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,19 +29,8 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setNewImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
   const handleSubmit = () => {
-    const updatedData: Partial<Item> & { image?: File } = {
-      ...formData,
-      image: newImage ?? undefined,
-    };
+    const { imageUrl, ...updatedData } = formData;
 
     updateItem(
       { id: formData._id, updatedData },
@@ -47,6 +38,7 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
         onSuccess: (updatedItem) => {
           toast.success("✅ Item updated successfully!");
           onSave(updatedItem);
+          refreshTable(); // ✅ refresh table after save
           onClose();
         },
         onError: (err) => {
@@ -57,13 +49,16 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
   };
 
   const createdAt = new Date(item.createdAt);
-  const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const time = createdAt.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   const date = createdAt.toLocaleDateString();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-sans">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 relative animate-fadeIn">
-        {/* Close Button */}
+        {/* Close */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
@@ -71,36 +66,25 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
           <X size={24} />
         </button>
 
-        {/* Header */}
         <h2 className="text-2xl font-semibold text-gray-800 mb-6 border-b pb-3">
           Edit Item Details
         </h2>
 
-        {/* Content Section */}
         <div className="flex gap-8">
-          {/* Left Side - Image */}
+          {/* Image */}
           <div className="flex-shrink-0">
-            <label htmlFor="image-upload" className="cursor-pointer">
-              <img
-                src={
-                  imagePreview
-                    ? imagePreview
-                    : "https://placehold.co/180x180/6366f1/ffffff?text=No+Image"
-                }
-                alt={item.category}
-                className="w-48 h-48 rounded-lg object-cover border border-gray-300"
-              />
-              <input
-                id="image-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
+            <img
+              src={
+                imagePreview
+                  ? imagePreview
+                  : "https://placehold.co/180x180/6366f1/ffffff?text=No+Image"
+              }
+              alt={item.category}
+              className="w-48 h-48 rounded-lg object-cover border border-gray-300"
+            />
           </div>
 
-          {/* Right Side - Editable Fields */}
+          {/* Editable Fields */}
           <div className="flex flex-col justify-start w-full text-sm text-gray-700">
             <div className="grid grid-cols-2 gap-y-2 gap-x-6">
               {[
@@ -114,19 +98,33 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
                 { label: "Color", key: "itemColor" },
                 { label: "Brand", key: "brandType" },
                 { label: "Unique ID", key: "uniqueIdentifier" },
-              ].map(({ label, key }) => (
-                <div key={key} className="flex flex-col">
-                  <span className="font-semibold text-gray-800">{label}</span>
-                  <input
-                    type="text"
-                    name={key}
-                    value={(formData as any)[key] ?? ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              ))}
+              ].map(({ label, key }) => {
+                const value = (formData as any)[key] ?? "";
+                const isUneditable = value === "-"; // ✅ Disable editing if "-"
+                return (
+                  <div key={key} className="flex flex-col">
+                    <span className="font-semibold text-gray-800">{label}</span>
+                    {isUneditable ? (
+                      <input
+                        type="text"
+                        value={value}
+                        readOnly
+                        className="border border-gray-200 rounded-md px-2 py-1 text-sm text-gray-400 bg-gray-100 cursor-not-allowed"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        name={key}
+                        value={value}
+                        onChange={handleChange}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  </div>
+                );
+              })}
 
+              {/* Read-only Info */}
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-800">Item No.</span>
                 <span className="text-gray-500 text-sm">{item._id}</span>
@@ -145,7 +143,7 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
           </div>
         </div>
 
-        {/* Footer Buttons */}
+        {/* Footer */}
         <div className="flex justify-end gap-3 mt-8 border-t pt-4">
           <button
             onClick={onClose}
@@ -158,7 +156,7 @@ const TableItemEditModal: React.FC<EditModalProps> = ({ item, onClose, onSave })
             disabled={isPending}
             className={`px-5 py-2 rounded-md font-medium text-white transition ${
               isPending
-                ? "bg-blue-400 cursor-not-allowed"
+                ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
