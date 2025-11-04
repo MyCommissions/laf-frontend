@@ -48,3 +48,11 @@ export const createFoundItemApi = async (
   );
   return data;
 };
+
+export const updateItemApi = async (
+  id: string,
+  updatedData: Partial<Item>
+): Promise<Item> => {
+  const { data } = await client.put(`/item/pending/${id}`, updatedData);
+  return data;
+};
