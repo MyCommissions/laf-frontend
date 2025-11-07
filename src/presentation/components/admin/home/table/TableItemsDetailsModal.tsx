@@ -5,6 +5,8 @@ import { X, Edit } from "lucide-react";
 import { Item } from "../../../../../data/models/Item";
 import TableItemEditModal from "./TableItemEditModal";
 import { getDisplayImageUrl } from "../../../../../utils/imageHelper";
+import { useDeleteItem } from "../../../../../domain/hooks/useItems";
+import { toast } from "sonner";
 
 interface DetailsModalProps {
   item: Item;
@@ -18,6 +20,9 @@ const TableItemDetailsModal: React.FC<DetailsModalProps> = ({
   refreshTable,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const deleteMutation = useDeleteItem();
+
   const imagePreview = getDisplayImageUrl(item.imageUrl);
   const createdAt = new Date(item.createdAt);
   const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -30,8 +35,23 @@ const TableItemDetailsModal: React.FC<DetailsModalProps> = ({
     onClose();
   };
 
+  // ✅ Delete logic with toast and refresh
+  const handleDelete = async () => {
+    if (!item?._id) return;
+    try {
+      await deleteMutation.mutateAsync(item._id); // ✅ pass string only
+      toast.success("Item deleted successfully!");
+      refreshTable();
+      setShowConfirm(false);
+      onClose();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete item");
+    }
+  };
+
   return (
     <>
+      {/* Main Details Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-sans">
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 relative animate-fadeIn">
           {/* Close */}
@@ -102,7 +122,7 @@ const TableItemDetailsModal: React.FC<DetailsModalProps> = ({
           {/* Footer */}
           <div className="flex justify-end gap-3 mt-8 border-t pt-4">
             <button
-              onClick={() => {}}
+              onClick={() => setShowConfirm(true)}
               className="px-5 py-2 rounded-md bg-red-600 text-white font-medium hover:bg-red-700 transition"
             >
               Delete
@@ -116,6 +136,38 @@ const TableItemDetailsModal: React.FC<DetailsModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* ✅ Confirmation Modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              Confirm Deletion
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this item? This action cannot be undone.
+            </p>
+
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+                className={`px-4 py-2 rounded-md bg-red-600 text-white font-medium hover:bg-red-700 transition ${
+                  deleteMutation.isPending ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ✅ Edit Modal */}
       {isEditing && (
