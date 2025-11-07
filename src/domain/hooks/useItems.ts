@@ -5,6 +5,7 @@ import {
   createLostItem,
   createFoundItem,
   updateItem,
+  deleteItem,
 } from "../usecases/itemUseCases";
 import { getClaimedItems, getMatchedAndPendingItems } from "../usecases/matchedItemUseCases";
 import type {
@@ -61,6 +62,17 @@ export function useUpdateItem() {
 
   return useMutation<Item, Error, { id: string; updatedData: Partial<Item> }>({
     mutationFn: ({ id, updatedData }) => updateItem(id, updatedData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+    },
+  });
+}
+
+export function useDeleteItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation<{ status: string; message: string }, Error, string>({
+    mutationFn: (id) => deleteItem(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
     },

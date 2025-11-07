@@ -56,3 +56,10 @@ export const updateItemApi = async (
   const { data } = await client.put(`/item/pending/${id}`, updatedData);
   return data;
 };
+
+export const deleteItemApi = async (
+  id: string
+): Promise<{ status: string; message: string }> => {
+  const { data } = await client.delete(`/item/pending/${id}`);
+  return data;
+};

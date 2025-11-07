@@ -5,6 +5,7 @@ import {
   getItemsApi,
   getFoundItemsApi,
   updateItemApi,
+  deleteItemApi,
 } from "../api/item.api";
 import type {
   CreateItemRequest,
@@ -31,5 +32,10 @@ export const itemRepository = {
   },
   updateItem: async (id: string, updatedData: Partial<Item>): Promise<Item> => {
     return await updateItemApi(id, updatedData);
+  },
+  deleteItem: async (
+    id: string
+  ): Promise<{ status: string; message: string }> => {
+    return await deleteItemApi(id);
   },
 };
