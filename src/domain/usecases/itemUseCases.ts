@@ -31,3 +31,9 @@ export const updateItem = async (
 ): Promise<Item> => {
   return await itemRepository.updateItem(id, updatedData);
 };
+
+export const deleteItem = async (
+  id: string
+): Promise<{ status: string; message: string }> => {
+  return await itemRepository.deleteItem(id);
+};

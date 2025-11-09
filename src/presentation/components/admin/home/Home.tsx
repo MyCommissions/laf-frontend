@@ -18,10 +18,9 @@ const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"Pending" | "Matched">("Pending");
 
-  // ✅ Fetch items from hook
-  const { data: items, isLoading, isError } = useGetMatchedAndPendingItems();
+  const { data: items, isLoading, isError, refetch } =
+    useGetMatchedAndPendingItems();
 
-  // ✅ Filter items by tab (Pending or Matched)
   const filteredItems: Item[] =
     items?.filter(
       (item) =>
@@ -36,13 +35,12 @@ const Home: React.FC = () => {
             .includes(searchQuery.toLowerCase()))
     ) || [];
 
-  const handleTabClick = (tab: "Pending" | "Matched") => {
-    setActiveTab(tab);
-  };
+  const handleTabClick = (tab: "Pending" | "Matched") => setActiveTab(tab);
+
+  const refreshTable = () => refetch();
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      {/* Header section */}
       <div className="bg-white p-6 shadow-md rounded-lg mb-8">
         <h1 className="text-4xl font-serif font-bold text-gray-800 mb-6">
           Records
@@ -91,7 +89,6 @@ const Home: React.FC = () => {
               <span className="text-sm font-medium">Filter</span>
             </div>
 
-            {/* Animated Tabs */}
             <div className="flex bg-gray-200 rounded-full p-1 relative">
               {["Pending", "Matched"].map((tab) => (
                 <button
@@ -114,7 +111,6 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Main content area */}
       <div className="bg-white p-6 shadow-md rounded-lg">
         {isLoading ? (
           <div className="text-center text-gray-400 py-10">Loading...</div>
@@ -123,7 +119,7 @@ const Home: React.FC = () => {
             Failed to load items.
           </div>
         ) : (
-          <DataTable items={filteredItems} />
+          <DataTable items={filteredItems} refreshTable={refreshTable} />
         )}
       </div>
     </div>
