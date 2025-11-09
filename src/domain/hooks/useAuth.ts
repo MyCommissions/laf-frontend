@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   login,
   register,
@@ -12,7 +12,7 @@ import {
   User,
   ApiResponse,
 } from "../../data/models/User";
-import { updateUserUseCase } from "../usecases/authUseCases";
+import { getUsersByRoleUseCase, updateUserUseCase } from "../usecases/authUseCases";
 
 // Hook for login
 export const useLogin = () => {
@@ -36,5 +36,17 @@ export const useUpdateUser = () => {
     { userId: string; payload: Partial<User> }
   >({
     mutationFn: ({ userId, payload }) => updateUserUseCase(userId, payload),
+  });
+};
+
+// ✅ Hook to get a single user by role
+export const useUserByRole = (roleId: number) => {
+  return useQuery<User | null, Error>({
+    queryKey: ["user", roleId],
+    queryFn: async () => {
+      const users = await getUsersByRoleUseCase(roleId);
+      return users.length > 0 ? users[0] : null;
+    },
+    enabled: !!roleId,
   });
 };
