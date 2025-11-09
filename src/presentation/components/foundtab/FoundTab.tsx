@@ -9,11 +9,14 @@ import { Item } from "../../../data/models/Item";
 
 const categories: string[] = [
   "Category",
+  "Accessory",
+  "Cash",
+  "Document",
+  "Gadget",
+  "ID",
+  "Key",
   "Umbrella",
   "Wallet",
-  "Keys",
-  "Phone",
-  "ID",
   "Others",
 ];
 

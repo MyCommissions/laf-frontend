@@ -3,10 +3,15 @@ import { ChevronDown } from "lucide-react";
 
 const categories: string[] = [
   "Category",
+  "Accessory",
+  "Cash",
+  "Document",
+  "Gadget",
+  "ID",
+  "Key",
   "Umbrella",
   "Wallet",
-  "Keys",
-  "Phone",
+  "Others",
 ];
 
 const DropdownMenu = () => {

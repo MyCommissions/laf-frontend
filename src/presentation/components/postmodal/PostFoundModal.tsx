@@ -90,24 +90,31 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
   const isDisabled = (field: string): boolean => {
     if (!image) return true;
     switch (selectedCategory) {
+      case "Accessory":
+        if (["amount", "uid"].includes(field)) return true;
+        break;
       case "Umbrella":
         if (["amount", "brand", "uid"].includes(field)) return true;
         break;
       case "Wallet":
         if (["uid"].includes(field)) return true;
         break;
-      case "Phone":
+      case "Gadget":
         if (["color", "size", "amount"].includes(field)) return true;
         break;
-      case "Keys":
+      case "Key":
+        if (["color", "amount", "uid",].includes(field)) return true;
+        break;
       case "ID":
         if (["color", "size", "amount", "brand"].includes(field)) return true;
         break;
       case "Cash":
         if (["color", "size", "uid", "brand"].includes(field)) return true;
         break;
+        case "Document":
+        if (["size", "uid", "amount",].includes(field)) return true;
+        break;
       case "Others":
-        if (["color", "size", "amount", "uid", "brand"].includes(field)) return true;
         break;
     }
     return false;
@@ -376,7 +383,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Amount Money</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Amount Money</label>
                 <input
                   type="text"
                   placeholder="Enter amount"
@@ -388,7 +395,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Unique Identifier</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Unique Identifier</label>
                 <input
                   type="text"
                   placeholder="N/A"
@@ -400,7 +407,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
                 <input
                   type="text"
                   placeholder="Enter Remarks"
