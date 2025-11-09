@@ -16,6 +16,7 @@ interface PostModalProps {
 }
 
 const PostFoundModal = ({ open, onClose }: PostModalProps) => {
+  // ===== All hooks at the top =====
   const [image, setImage] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -36,41 +37,41 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
 
   const { mutate: createFoundItem, isPending } = useCreateFoundItem();
 
+  // ===== Camera effect =====
   useEffect(() => {
-    if (isCameraOpen) {
-      const openCamera = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          if (videoRef.current) videoRef.current.srcObject = stream;
-        } catch (error) {
-          console.error("Camera access denied:", error);
-          setIsCameraOpen(false);
-        }
-      };
-      openCamera();
-    } else {
+    if (!isCameraOpen) {
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach((track) => track.stop());
       }
+      return;
     }
+
+    const openCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      } catch (error) {
+        console.error("Camera access denied:", error);
+        setIsCameraOpen(false);
+      }
+    };
+
+    openCamera();
   }, [isCameraOpen]);
 
+  // ===== Helpers =====
   const capturePhoto = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    if (canvas && video) {
-      const context = canvas.getContext("2d");
-      if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataURL = canvas.toDataURL("image/png");
-        setImage(dataURL);
-        setIsCameraOpen(false);
-      }
-    }
-  };
+    if (!canvas || !video) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
-  if (!open) return null;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    setImage(canvas.toDataURL("image/png"));
+    setIsCameraOpen(false);
+  };
 
   const resetForm = () => {
     setImage(null);
@@ -90,32 +91,15 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
   const isDisabled = (field: string): boolean => {
     if (!image) return true;
     switch (selectedCategory) {
-      case "Accessories":
-        if (["amount"].includes(field)) return true;
-        break;
-      case "Umbrella":
-        if (["amount", "brand", "uid"].includes(field)) return true;
-        break;
-      case "Wallet":
-        if (["uid"].includes(field)) return true;
-        break;
-      case "Gadgets":
-        if (["color", "size", "amount"].includes(field)) return true;
-        break;
-      case "Keys":
-        if (["color", "amount", "uid",].includes(field)) return true;
-        break;
-      case "ID":
-        if (["color", "size", "amount", "brand"].includes(field)) return true;
-        break;
-      case "Cash":
-        if (["color", "size", "uid", "brand"].includes(field)) return true;
-        break;
-        case "Documents":
-        if (["size", "uid", "amount",].includes(field)) return true;
-        break;
-      case "Others":
-        break;
+      case "Accessories": if (["amount"].includes(field)) return true; break;
+      case "Umbrella": if (["amount", "brand", "uid"].includes(field)) return true; break;
+      case "Wallet": if (["uid"].includes(field)) return true; break;
+      case "Gadgets": if (["color", "size", "amount"].includes(field)) return true; break;
+      case "Keys": if (["color", "amount", "uid"].includes(field)) return true; break;
+      case "ID": if (["color", "size", "amount", "brand"].includes(field)) return true; break;
+      case "Cash": if (["color", "size", "uid", "brand"].includes(field)) return true; break;
+      case "Documents": if (["size", "uid", "amount"].includes(field)) return true; break;
+      default: break;
     }
     return false;
   };
@@ -124,12 +108,10 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
     if (!image) return;
 
     try {
-      // Convert base64 image to Blob
       const response = await fetch(image);
       const blob = await response.blob();
       const file = new File([blob], "captured-image.png", { type: "image/png" });
 
-      // Create FormData
       const formData = new FormData();
       formData.append("image", file);
       formData.append("firstName", firstName);
@@ -138,10 +120,10 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
       formData.append("email", email);
       formData.append(
         "category",
-        selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others"
+        selectedCategory !== "Select Category" ? selectedCategory : "Others"
       );
-      if (selectedColor && selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
-      if (selectedSize && selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
+      if (selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
+      if (selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
       if (brandType) formData.append("brandType", brandType);
       if (moneyAmount) formData.append("moneyAmount", moneyAmount);
       if (remarks) formData.append("remarks", remarks);
@@ -150,7 +132,6 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
       formData.append("claimed", "false");
       formData.append("placeFound", "Campus");
 
-      // Call mutation
       createFoundItem(formData, {
         onSuccess: () => {
           resetForm();
@@ -166,6 +147,9 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
     }
   };
 
+  if (!open) return null;
+
+  // ===== JSX (Design intact) =====
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
       <div className="bg-gray-200 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden relative">
