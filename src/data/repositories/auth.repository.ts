@@ -7,7 +7,7 @@ import {
   User,
   ApiResponse,
 } from "../models/User";
-import { updateUserApi } from "../api/auth.api";
+import { getUsersByRoleApi, updateUserApi } from "../api/auth.api";
 
 // login request
 export const login = async (
@@ -31,4 +31,9 @@ export const updateUser = async (
   payload: Partial<User>
 ): Promise<ApiResponse<User>> => {
   return await updateUserApi(userId, payload);
+};
+
+// Fetch users by role
+export const getUsersByRole = async (roleId: number): Promise<User[]> => {
+  return await getUsersByRoleApi(roleId);
 };

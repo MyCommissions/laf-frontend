@@ -1,4 +1,5 @@
 import {
+  getUsersByRole,
   login,
   register,
   updateUser,
@@ -30,4 +31,10 @@ export const updateUserUseCase = async (
   const response = await updateUser(userId, payload);
 
   return response;
+};
+
+// Use case for fetching users by role
+export const getUsersByRoleUseCase = async (roleId: number): Promise<User[]> => {
+  const users = await getUsersByRole(roleId);
+  return users;
 };
