@@ -4,7 +4,7 @@ import { ChevronDown, Camera, X } from "lucide-react";
 import { useCreateLostItem } from "../../../domain/hooks/useItems";
 import { CATEGORIES } from "../../../data/models/Item";
 import LostModal from "../thankyoumodal/LostModal";
-
+import { ToastMessage } from "../ui/ToastMessage";
 
 const categories: string[] = ["Select Category", ...CATEGORIES];
 const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"];
@@ -16,6 +16,7 @@ interface PostModalProps {
 }
 
 const PostLostModal = ({ open, onClose }: PostModalProps) => {
+  // ===== Hooks at the top =====
   const [image, setImage] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -34,43 +35,51 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
   const [uniqueIdentifier, setUniqueIdentifier] = useState("");
   const [isLostModalOpen, setIsLostModalOpen] = useState(false);
 
+  // Toast state
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error" | "warning">("success");
+
   const { mutate: createLostItem, isPending } = useCreateLostItem();
 
+  // ===== Camera effect =====
   useEffect(() => {
-    if (isCameraOpen) {
-      const openCamera = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          if (videoRef.current) videoRef.current.srcObject = stream;
-        } catch (error) {
-          console.error("Camera access denied:", error);
-          setIsCameraOpen(false);
-        }
-      };
-      openCamera();
-    } else {
+    if (!isCameraOpen) {
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach((track) => track.stop());
       }
+      return;
     }
+
+    const openCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      } catch (error) {
+        console.error("Camera access denied:", error);
+        setIsCameraOpen(false);
+        setToastType("error");
+        setToastMessage("Camera access denied");
+        setShowToast(true);
+      }
+    };
+
+    openCamera();
   }, [isCameraOpen]);
 
+  // ===== Helpers =====
   const capturePhoto = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    if (canvas && video) {
-      const context = canvas.getContext("2d");
-      if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataURL = canvas.toDataURL("image/png");
-        setImage(dataURL);
-        setIsCameraOpen(false);
-      }
-    }
-  };
+    if (!canvas || !video) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
-  if (!open) return null;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    setImage(canvas.toDataURL("image/png"));
+    setIsCameraOpen(false);
+  };
 
   const resetForm = () => {
     setImage(null);
@@ -88,34 +97,17 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
   };
 
   const isDisabled = (field: string): boolean => {
-   if (!image) return true;
+    if (!image) return true;
     switch (selectedCategory) {
-      case "Accessories":
-        if (["amount"].includes(field)) return true;
-        break;
-      case "Umbrella":
-        if (["amount", "brand", "uid"].includes(field)) return true;
-        break;
-      case "Wallet":
-        if (["uid"].includes(field)) return true;
-        break;
-      case "Gadgets":
-        if (["color", "size", "amount"].includes(field)) return true;
-        break;
-      case "Keys":
-        if (["color", "amount", "uid",].includes(field)) return true;
-        break;
-      case "ID":
-        if (["color", "size", "amount", "brand"].includes(field)) return true;
-        break;
-      case "Cash":
-        if (["color", "size", "uid", "brand"].includes(field)) return true;
-        break;
-        case "Documents":
-        if (["size", "uid", "amount",].includes(field)) return true;
-        break;
-      case "Others":
-        break;
+      case "Accessories": if (["amount"].includes(field)) return true; break;
+      case "Umbrella": if (["amount", "brand", "uid"].includes(field)) return true; break;
+      case "Wallet": if (["uid"].includes(field)) return true; break;
+      case "Gadgets": if (["color", "size", "amount"].includes(field)) return true; break;
+      case "Keys": if (["color", "amount", "uid"].includes(field)) return true; break;
+      case "ID": if (["color", "size", "amount", "brand"].includes(field)) return true; break;
+      case "Cash": if (["color", "size", "uid", "brand"].includes(field)) return true; break;
+      case "Documents": if (["size", "uid", "amount"].includes(field)) return true; break;
+      default: break;
     }
     return false;
   };
@@ -124,7 +116,6 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
     if (!image) return;
 
     try {
-      // Convert Base64 image to Blob for upload
       const response = await fetch(image);
       const blob = await response.blob();
       const file = new File([blob], "captured-image.png", { type: "image/png" });
@@ -137,10 +128,10 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
       formData.append("email", email);
       formData.append(
         "category",
-        selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others"
+        selectedCategory !== "Select Category" ? selectedCategory : "Others"
       );
-      if (selectedColor && selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
-      if (selectedSize && selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
+      if (selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
+      if (selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
       if (brandType) formData.append("brandType", brandType);
       if (moneyAmount) formData.append("moneyAmount", moneyAmount);
       if (remarks) formData.append("remarks", remarks);
@@ -153,16 +144,37 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
         onSuccess: () => {
           resetForm();
           setIsLostModalOpen(true);
+          setToastType("success");
+          setToastMessage("Lost item reported successfully");
+          setShowToast(true);
           setTimeout(() => {
             setIsLostModalOpen(false);
             onClose();
           }, 1500);
         },
+        onError: (error: any) => {
+          setToastType("error");
+          setToastMessage(error?.response?.data?.message || error.message || "Failed to report lost item");
+          setShowToast(true);
+        },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error);
+      setToastType("error");
+      setToastMessage(error.message || "Failed to process image");
+      setShowToast(true);
     }
   };
+
+  // Auto-hide toast
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
