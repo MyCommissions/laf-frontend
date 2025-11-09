@@ -3,12 +3,12 @@ import { ChevronDown } from "lucide-react";
 
 const categories: string[] = [
   "Category",
-  "Accessory",
+  "Accessories",
   "Cash",
-  "Document",
-  "Gadget",
+  "Documents",
+  "Gadgets",
   "ID",
-  "Key",
+  "Keys",
   "Umbrella",
   "Wallet",
   "Others",

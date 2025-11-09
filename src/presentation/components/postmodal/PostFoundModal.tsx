@@ -6,7 +6,7 @@ import { useCreateFoundItem } from "../../../domain/hooks/useItems";
 import { CATEGORIES } from "../../../data/models/Item";
 import { useQueryClient } from "@tanstack/react-query";
 
-const categories: string[] = ["Select Category", ...CATEGORIES, "Keys"];
+const categories: string[] = ["Select Category", ...CATEGORIES];
 const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"];
 const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
 
@@ -90,8 +90,8 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
   const isDisabled = (field: string): boolean => {
     if (!image) return true;
     switch (selectedCategory) {
-      case "Accessory":
-        if (["amount", "uid"].includes(field)) return true;
+      case "Accessories":
+        if (["amount"].includes(field)) return true;
         break;
       case "Umbrella":
         if (["amount", "brand", "uid"].includes(field)) return true;
@@ -99,10 +99,10 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
       case "Wallet":
         if (["uid"].includes(field)) return true;
         break;
-      case "Gadget":
+      case "Gadgets":
         if (["color", "size", "amount"].includes(field)) return true;
         break;
-      case "Key":
+      case "Keys":
         if (["color", "amount", "uid",].includes(field)) return true;
         break;
       case "ID":
@@ -111,7 +111,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
       case "Cash":
         if (["color", "size", "uid", "brand"].includes(field)) return true;
         break;
-        case "Document":
+        case "Documents":
         if (["size", "uid", "amount",].includes(field)) return true;
         break;
       case "Others":
