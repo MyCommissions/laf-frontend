@@ -85,10 +85,13 @@ export type CreateItemData = CreateItemRequest;
 
 // ✅ keep your constants unchanged
 export const CATEGORIES = [
+  "Accessory",
+  "Cash",
+  "Document",
+  "Gadget",
+  "ID",
+  "Key",
   "Umbrella",
   "Wallet",
-  "Cash",
-  "Phone",
-  "ID",
   "Others",
 ] as const;
