@@ -120,20 +120,22 @@ const TableItemDetailsModal: React.FC<DetailsModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 mt-8 border-t pt-4">
-            <button
-              onClick={() => setShowConfirm(true)}
-              className="px-5 py-2 rounded-md bg-red-600 text-white font-medium hover:bg-red-700 transition"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="px-5 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition flex items-center gap-2"
-            >
-              <Edit size={18} /> Edit
-            </button>
-          </div>
+          {item.status?.toLowerCase() === "pending" && (
+            <div className="flex justify-end gap-3 mt-8 border-t pt-4">
+              <button
+                onClick={() => setShowConfirm(true)}
+                className="px-5 py-2 rounded-md bg-red-600 text-white font-medium hover:bg-red-700 transition"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-5 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition flex items-center gap-2"
+              >
+                <Edit size={18} /> Edit
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

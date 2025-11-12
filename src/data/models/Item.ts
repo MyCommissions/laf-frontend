@@ -9,13 +9,31 @@ export interface ClaimInfo {
   pin?: string; // optional in case you store PIN codes
 }
 
+// 🆕 Define structure for matched partner info
+export interface MatchedWithInfo {
+  _id: string;
+  category: string;
+  itemColor?: string;
+  type: "lost" | "found";
+}
+
 export interface Item {
   _id: string;
   firstName: string;
   lastName: string;
   contactNumber: string;
   email: string;
-  category: "Umbrella" | "Wallet" | "Cash" | "Phone" | "ID" | "Others";
+  category:
+    | "Umbrella"
+    | "Wallet"
+    | "Cash"
+    | "Phone"
+    | "ID"
+    | "Others"
+    | "Keys"
+    | "Documents"
+    | "Accessories"
+    | "Gadgets";
   imageUrl?: string;
   moneyAmount?: number;
   itemSize?: "Small" | "Medium" | "Large";
@@ -37,15 +55,18 @@ export interface Item {
   matched: boolean;
   createdAt: string;
   updatedAt: string;
-  status?: "Pending" | "Matched" | "Claimed"; // added "Claimed"
+  status?: "pending" | "matched" | "claimed"; // lowercase to match backend
   type?: "lost" | "found";
 
-  // ✅ Added nested structure for matched/pending records
+  // ✅ Nested structure for matched/pending records
   foundItem?: Item;
   lostItem?: Item;
 
-  // ✅ Added claim info for claimed items
+  // ✅ Claim info
   claimInfo?: ClaimInfo;
+
+  // ✅ MatchedWith info from backend
+  matchedWith?: MatchedWithInfo;
 }
 
 export interface CreateItemRequest {
@@ -53,7 +74,17 @@ export interface CreateItemRequest {
   lastName: string;
   contactNumber: string;
   email: string;
-  category: "Umbrella" | "Wallet" | "Keys" | "Phone" | "ID" | "Cash" | "Others";
+  category:
+    | "Umbrella"
+    | "Wallet"
+    | "Keys"
+    | "Phone"
+    | "ID"
+    | "Cash"
+    | "Others"
+    | "Documents"
+    | "Accessories"
+    | "Gadgets";
   imageUrl?: string;
   moneyAmount?: number;
   itemSize?: "Small" | "Medium" | "Large";
@@ -73,17 +104,16 @@ export interface CreateItemRequest {
   found?: boolean;
   claimed?: boolean;
   matched?: boolean;
-  claimInfo?: ClaimInfo; // ✅ also add here to support claim creation
+  claimInfo?: ClaimInfo;
 }
 
 export interface CreateItemResponse extends Item {}
 
 export type GetItemsResponse = Item[];
-
 export type LostFoundItem = Item;
 export type CreateItemData = CreateItemRequest;
 
-// ✅ keep your constants unchanged
+// ✅ Categories constant
 export const CATEGORIES = [
   "Accessories",
   "Cash",
