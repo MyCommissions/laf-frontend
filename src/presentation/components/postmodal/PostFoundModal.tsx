@@ -4,10 +4,11 @@ import { ChevronDown, Camera, X } from "lucide-react";
 import FoundModal from "../thankyoumodal/FoundModal";
 import { useCreateFoundItem } from "../../../domain/hooks/useItems";
 import { CATEGORIES } from "../../../data/models/Item";
+import { ToastMessage } from "../ui/ToastMessage";
 import { useQueryClient } from "@tanstack/react-query";
 
 const categories: string[] = ["Select Category", ...CATEGORIES];
-const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"];
+const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White"];
 const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
 
 interface PostModalProps {
@@ -16,7 +17,6 @@ interface PostModalProps {
 }
 
 const PostFoundModal = ({ open, onClose }: PostModalProps) => {
-  // ===== All hooks at the top =====
   const [image, setImage] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -35,7 +35,22 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
   const [uniqueIdentifier, setUniqueIdentifier] = useState("");
   const [isFoundModalOpen, setIsFoundModalOpen] = useState(false);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Toast states
+  const [toastType, setToastType] = useState<"success" | "error" | "warning">("success");
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+
   const { mutate: createFoundItem, isPending } = useCreateFoundItem();
+
+  // ===== Toast auto-hide =====
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   // ===== Camera effect =====
   useEffect(() => {
@@ -67,7 +82,6 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
     if (!canvas || !video) return;
     const context = canvas.getContext("2d");
     if (!context) return;
-
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     setImage(canvas.toDataURL("image/png"));
     setIsCameraOpen(false);
@@ -86,29 +100,64 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
     setMoneyAmount("");
     setRemarks("");
     setUniqueIdentifier("");
+    setErrors({});
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!image) newErrors.image = "Please capture an item photo.";
+    if (selectedCategory === "Select Category") newErrors.category = "Please select a category.";
+    if (!firstName.trim()) newErrors.firstName = "First name is required.";
+    if (!lastName.trim()) newErrors.lastName = "Last name is required.";
+    if (!contactNumber.trim()) newErrors.contactNumber = "Contact number is required.";
+    else if (!/^[0-9]{10,13}$/.test(contactNumber))
+      newErrors.contactNumber = "Enter a valid contact number.";
+    if (!email.trim()) newErrors.email = "Email address is required.";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Enter a valid email address.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const isDisabled = (field: string): boolean => {
     if (!image) return true;
     switch (selectedCategory) {
-      case "Accessories": if (["amount"].includes(field)) return true; break;
-      case "Umbrella": if (["amount", "brand", "uid"].includes(field)) return true; break;
-      case "Wallet": if (["uid"].includes(field)) return true; break;
-      case "Gadgets": if (["color", "size", "amount"].includes(field)) return true; break;
-      case "Keys": if (["color", "amount", "uid"].includes(field)) return true; break;
-      case "ID": if (["color", "size", "amount", "brand"].includes(field)) return true; break;
-      case "Cash": if (["color", "size", "uid", "brand"].includes(field)) return true; break;
-      case "Documents": if (["size", "uid", "amount"].includes(field)) return true; break;
-      default: break;
+      case "Accessories":
+        if (["amount"].includes(field)) return true;
+        break;
+      case "Umbrella":
+        if (["amount", "brand", "uid"].includes(field)) return true;
+        break;
+      case "Wallet":
+        if (["uid"].includes(field)) return true;
+        break;
+      case "Gadgets":
+        if (["color", "size", "amount"].includes(field)) return true;
+        break;
+      case "Keys":
+        if (["color", "amount", "uid"].includes(field)) return true;
+        break;
+      case "ID":
+        if (["color", "size", "amount", "brand"].includes(field)) return true;
+        break;
+      case "Cash":
+        if (["color", "size", "uid", "brand"].includes(field)) return true;
+        break;
+      case "Documents":
+        if (["size", "uid", "amount"].includes(field)) return true;
+        break;
+      default:
+        break;
     }
     return false;
   };
 
   const handleSubmit = async () => {
-    if (!image) return;
+    if (!validateForm()) return;
 
     try {
-      const response = await fetch(image);
+      const response = await fetch(image as string);
       const blob = await response.blob();
       const file = new File([blob], "captured-image.png", { type: "image/png" });
 
@@ -133,23 +182,39 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
       formData.append("placeFound", "Campus");
 
       createFoundItem(formData, {
-        onSuccess: () => {
+        onSuccess: (data: any) => {
           resetForm();
+          setToastType("success");
+          setToastMessage(data?.message || "Item successfully posted!");
+          setShowToast(true);
           setIsFoundModalOpen(true);
+
           setTimeout(() => {
             setIsFoundModalOpen(false);
             onClose();
           }, 1500);
         },
+        onError: (error: any) => {
+          // ✅ Properly show backend error message instead of Axios default
+          const backendMessage =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Something went wrong while posting item.";
+          setToastType("error");
+          setToastMessage(backendMessage);
+          setShowToast(true);
+        },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error);
+      setToastType("error");
+      setToastMessage("Unexpected error occurred. Please try again.");
+      setShowToast(true);
     }
   };
 
   if (!open) return null;
 
-  // ===== JSX (Design intact) =====
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
       <div className="bg-gray-200 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden relative">
@@ -187,7 +252,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
         {/* Body */}
         <div className="p-6 bg-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Picture Section */}
+            {/* Picture */}
             <div className="md:col-span-1 space-y-4">
               <h3 className="font-semibold text-lg mb-1">Item Picture</h3>
               <div className="relative w-full h-48 border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center p-4 bg-white">
@@ -204,6 +269,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   </div>
                 )}
               </div>
+              {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
 
               {/* Category */}
               <div className="relative">
@@ -215,16 +281,12 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   className="w-full appearance-none px-5 pr-8 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 text-center shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {categories.map((category, index) => (
-                    <option
-                      key={category}
-                      value={category}
-                      disabled={index === 0}
-                      hidden={index === 0 && selectedCategory !== "Select Category"}
-                    >
+                    <option key={category} value={category} disabled={index === 0}>
                       {category}
                     </option>
                   ))}
                 </select>
+                {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700 pt-8">
                   <ChevronDown size={20} />
                 </div>
@@ -240,12 +302,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   className="w-full appearance-none px-5 pr-8 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 text-center shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {colors.map((color, index) => (
-                    <option
-                      key={color}
-                      value={color}
-                      disabled={index === 0}
-                      hidden={index === 0 && selectedColor !== "Select Color"}
-                    >
+                    <option key={color} value={color} disabled={index === 0}>
                       {color}
                     </option>
                   ))}
@@ -265,12 +322,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   className="w-full appearance-none px-5 pr-8 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 text-center shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {itemSizes.map((itemSize, index) => (
-                    <option
-                      key={itemSize}
-                      value={itemSize}
-                      disabled={index === 0}
-                      hidden={index === 0 && selectedSize !== "Select Item Size"}
-                    >
+                    <option key={itemSize} value={itemSize} disabled={index === 0}>
                       {itemSize}
                     </option>
                   ))}
@@ -281,7 +333,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
             </div>
 
-            {/* Other Form Fields */}
+            {/* Other Fields */}
             <div className="flex flex-col space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">First Name</label>
@@ -293,6 +345,9 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("fname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+                )}
               </div>
 
               <div>
@@ -305,10 +360,15 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("lname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
                 <input
                   type="text"
                   placeholder="Enter email"
@@ -317,10 +377,13 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("email")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Brand Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Brand Name
+                </label>
                 <input
                   type="text"
                   placeholder="Enter Brand"
@@ -351,11 +414,13 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                 />
               </div>
             </div>
-                          
+
             {/* Contact & Others */}
             <div className="flex flex-col space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Contact No.</label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Contact No.
+                </label>
                 <input
                   type="text"
                   placeholder="Enter phone number"
@@ -364,10 +429,15 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("contact")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.contactNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.contactNumber}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount Money</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Amount Money
+                </label>
                 <input
                   type="text"
                   placeholder="Enter amount"
@@ -379,7 +449,9 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Unique Identifier</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Unique Identifier
+                </label>
                 <input
                   type="text"
                   placeholder="N/A"
@@ -406,13 +478,22 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                 <button
                   onClick={handleSubmit}
                   style={{ backgroundColor: "#01C629" }}
-                  disabled={!image || isPending}
+                  disabled={isPending}
                   className="text-white w-full p-12 mt-1 rounded-lg font-bold shadow-md transition-colors hover:opacity-90 text-4xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isPending ? "Posting..." : "POST"}
                 </button>
                 <FoundModal open={isFoundModalOpen} onClose={() => setIsFoundModalOpen(false)} />
               </div>
+
+              {/* Toast */}
+              {showToast && (
+                <ToastMessage
+                  type={toastType}
+                  message={toastMessage}
+                  onClose={() => setShowToast(false)}
+                />
+              )}
             </div>
           </div>
         </div>
