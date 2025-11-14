@@ -7,7 +7,7 @@ import LostModal from "../thankyoumodal/LostModal";
 import { ToastMessage } from "../ui/ToastMessage";
 
 const categories: string[] = ["Select Category", ...CATEGORIES];
-const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"];
+const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White"];
 const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
 
 interface PostModalProps {
@@ -39,6 +39,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error" | "warning">("success");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate: createLostItem, isPending } = useCreateLostItem();
 
@@ -113,6 +114,8 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     if (!image) return;
 
     try {
@@ -153,8 +156,12 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
           }, 1500);
         },
         onError: (error: any) => {
+          const backendMessage =
+            error?.response?.data?.message ||
+            error.message ||
+            "Failed to report lost item.";
           setToastType("error");
-          setToastMessage(error?.response?.data?.message || error.message || "Failed to report lost item");
+          setToastMessage(backendMessage);
           setShowToast(true);
         },
       });
@@ -164,6 +171,23 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
       setToastMessage(error.message || "Failed to process image");
       setShowToast(true);
     }
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!image) newErrors.image = "Please capture an image first.";
+    if (selectedCategory === "Select Category") newErrors.category = "Category is required.";
+    if (!firstName) newErrors.firstName = "First name is required.";
+    if (!lastName) newErrors.lastName = "Last name is required.";
+    if (!contactNumber) newErrors.contactNumber = "Contact number is required.";
+    else if (!/^[0-9]{11}$/.test(contactNumber)) newErrors.contactNumber = "Enter a valid 11-digit contact number.";
+    if (!email) newErrors.email = "Email address is required.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Invalid email format.";
+    if (!remarks) newErrors.remarks = "Remarks are required.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   // Auto-hide toast
@@ -230,6 +254,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   </div>
                 )}
               </div>
+              {errors.image && <p className="text-red-500 text-sm mt-1 text-center">{errors.image}</p>}
 
               {/* Category */}
               <div className="relative">
@@ -254,6 +279,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700 pt-8">
                   <ChevronDown size={20} />
                 </div>
+                {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
               </div>
 
               {/* Color */}
@@ -279,6 +305,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700 pt-8">
                   <ChevronDown size={20} />
                 </div>
+                {errors.color && <p className="text-red-500 text-sm mt-1">{errors.color}</p>}
               </div>
 
               {/* Size */}
@@ -304,6 +331,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700 pt-8">
                   <ChevronDown size={20} />
                 </div>
+                {errors.size && <p className="text-red-500 text-sm mt-1">{errors.size}</p>}
               </div>
             </div>
 
@@ -319,6 +347,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("fname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
               </div>
 
               <div>
@@ -331,6 +360,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("lname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
               </div>
 
               <div>
@@ -343,6 +373,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("email")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
 
               <div>
@@ -390,6 +421,9 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("contact")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.contactNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.contactNumber}</p>
+                )}
               </div>
 
               <div>
@@ -426,6 +460,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("remarks")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.remarks && <p className="text-red-500 text-sm mt-1">{errors.remarks}</p>}
               </div>
 
               <div className="pt-5">
@@ -443,6 +478,15 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
           </div>
         </div>
       </div>
+
+      {/* Toast */}
+      {showToast && (
+        <ToastMessage
+          type={toastType}
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };
