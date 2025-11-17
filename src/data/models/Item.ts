@@ -38,15 +38,21 @@ export interface Item {
   moneyAmount?: number;
   itemSize?: "Small" | "Medium" | "Large";
   itemColor?:
-    | "Red"
-    | "Orange"
-    | "Yellow"
-    | "Green"
-    | "Blue"
-    | "Indigo"
-    | "Violet"
     | "Black"
-    | "White";
+    | "White"
+    | "Gray"
+    | "Blue"
+    | "Red"
+    | "Green"
+    | "Yellow"
+    | "Brown"
+    | "Pink"
+    | "Purple"
+    | "Orange"
+    | "Gold"
+    | "Silver"
+    | "Beige / Cream"
+    | "Transparent / Clear";
   brandType?: string;
   uniqueIdentifier?: string;
   remarks?: string;
@@ -89,15 +95,21 @@ export interface CreateItemRequest {
   moneyAmount?: number;
   itemSize?: "Small" | "Medium" | "Large";
   itemColor?:
-    | "Red"
-    | "Orange"
-    | "Yellow"
-    | "Green"
-    | "Blue"
-    | "Indigo"
-    | "Violet"
     | "Black"
-    | "White";
+    | "White"
+    | "Gray"
+    | "Blue"
+    | "Red"
+    | "Green"
+    | "Yellow"
+    | "Brown"
+    | "Pink"
+    | "Purple"
+    | "Orange"
+    | "Gold"
+    | "Silver"
+    | "Beige / Cream"
+    | "Transparent / Clear";
   brandType?: string;
   uniqueIdentifier?: string;
   remarks?: string;

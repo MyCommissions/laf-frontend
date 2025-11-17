@@ -8,7 +8,7 @@ import { ToastMessage } from "../ui/ToastMessage";
 import { useQueryClient } from "@tanstack/react-query";
 
 const categories: string[] = ["Select Category", ...CATEGORIES];
-const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White"];
+const colors: string[] = ["Select Color","Black" , "White" , "Gray" , "Blue" , "Red" , "Green" , "Yellow" , "Brown" , "Pink" , "Purple" , "Orange" , "Gold" , "Silver" , "Beige / Cream" , "Transparent / Clear"];
 const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
 
 interface PostModalProps {
