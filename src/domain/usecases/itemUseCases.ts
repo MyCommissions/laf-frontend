@@ -24,3 +24,16 @@ export const createFoundItem = async (
 ): Promise<CreateItemResponse> => {
   return await itemRepository.createFoundItem(newItem);
 };
+
+export const updateItem = async (
+  id: string,
+  updatedData: Partial<Item>
+): Promise<Item> => {
+  return await itemRepository.updateItem(id, updatedData);
+};
+
+export const deleteItem = async (
+  id: string
+): Promise<{ status: string; message: string }> => {
+  return await itemRepository.deleteItem(id);
+};

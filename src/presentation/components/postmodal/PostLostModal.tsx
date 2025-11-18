@@ -4,9 +4,10 @@ import { ChevronDown, Camera, X } from "lucide-react";
 import { useCreateLostItem } from "../../../domain/hooks/useItems";
 import { CATEGORIES } from "../../../data/models/Item";
 import LostModal from "../thankyoumodal/LostModal";
+import { ToastMessage } from "../ui/ToastMessage";
 
-const categories: string[] = ["Select Category", ...CATEGORIES, "Keys"];
-const colors: string[] = ["Select Color", "Black", "Blue", "Red", "Green", "Yellow", "White", "Other"];
+const categories: string[] = ["Select Category", ...CATEGORIES];
+const colors: string[] = ["Select Color", "Black" , "White" , "Gray" , "Blue" , "Red" , "Green" , "Yellow" , "Brown" , "Pink" , "Purple" , "Orange" , "Gold" , "Silver" , "Beige / Cream" , "Transparent / Clear"];
 const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
 
 interface PostModalProps {
@@ -15,6 +16,7 @@ interface PostModalProps {
 }
 
 const PostLostModal = ({ open, onClose }: PostModalProps) => {
+  // ===== Hooks at the top =====
   const [image, setImage] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -33,43 +35,52 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
   const [uniqueIdentifier, setUniqueIdentifier] = useState("");
   const [isLostModalOpen, setIsLostModalOpen] = useState(false);
 
+  // Toast state
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error" | "warning">("success");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const { mutate: createLostItem, isPending } = useCreateLostItem();
 
+  // ===== Camera effect =====
   useEffect(() => {
-    if (isCameraOpen) {
-      const openCamera = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          if (videoRef.current) videoRef.current.srcObject = stream;
-        } catch (error) {
-          console.error("Camera access denied:", error);
-          setIsCameraOpen(false);
-        }
-      };
-      openCamera();
-    } else {
+    if (!isCameraOpen) {
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach((track) => track.stop());
       }
+      return;
     }
+
+    const openCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      } catch (error) {
+        console.error("Camera access denied:", error);
+        setIsCameraOpen(false);
+        setToastType("error");
+        setToastMessage("Camera access denied");
+        setShowToast(true);
+      }
+    };
+
+    openCamera();
   }, [isCameraOpen]);
 
+  // ===== Helpers =====
   const capturePhoto = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    if (canvas && video) {
-      const context = canvas.getContext("2d");
-      if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataURL = canvas.toDataURL("image/png");
-        setImage(dataURL);
-        setIsCameraOpen(false);
-      }
-    }
-  };
+    if (!canvas || !video) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
-  if (!open) return null;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    setImage(canvas.toDataURL("image/png"));
+    setIsCameraOpen(false);
+  };
 
   const resetForm = () => {
     setImage(null);
@@ -89,34 +100,25 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
   const isDisabled = (field: string): boolean => {
     if (!image) return true;
     switch (selectedCategory) {
-      case "Umbrella":
-        if (["amount", "brand", "uid"].includes(field)) return true;
-        break;
-      case "Wallet":
-        if (["uid"].includes(field)) return true;
-        break;
-      case "Phone":
-        if (["color", "size", "amount"].includes(field)) return true;
-        break;
-      case "Keys":
-      case "ID":
-        if (["color", "size", "amount", "brand"].includes(field)) return true;
-        break;
-      case "Cash":
-        if (["color", "size", "uid", "brand"].includes(field)) return true;
-        break;
-      case "Others":
-        if (["color", "size", "amount", "uid", "brand"].includes(field)) return true;
-        break;
+      case "Accessories": if (["amount"].includes(field)) return true; break;
+      case "Umbrella": if (["amount", "brand", "uid"].includes(field)) return true; break;
+      case "Wallet": if (["uid"].includes(field)) return true; break;
+      case "Gadgets": if (["color", "size", "amount"].includes(field)) return true; break;
+      case "Keys": if (["color", "amount", "uid"].includes(field)) return true; break;
+      case "ID": if (["color", "size", "amount", "brand"].includes(field)) return true; break;
+      case "Cash": if (["color", "size", "uid", "brand"].includes(field)) return true; break;
+      case "Documents": if (["size", "uid", "amount"].includes(field)) return true; break;
+      default: break;
     }
     return false;
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     if (!image) return;
 
     try {
-      // Convert Base64 image to Blob for upload
       const response = await fetch(image);
       const blob = await response.blob();
       const file = new File([blob], "captured-image.png", { type: "image/png" });
@@ -129,10 +131,10 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
       formData.append("email", email);
       formData.append(
         "category",
-        selectedCategory && selectedCategory !== "Select Category" ? selectedCategory : "Others"
+        selectedCategory !== "Select Category" ? selectedCategory : "Others"
       );
-      if (selectedColor && selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
-      if (selectedSize && selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
+      if (selectedColor !== "Select Color") formData.append("itemColor", selectedColor);
+      if (selectedSize !== "Select Item Size") formData.append("itemSize", selectedSize);
       if (brandType) formData.append("brandType", brandType);
       if (moneyAmount) formData.append("moneyAmount", moneyAmount);
       if (remarks) formData.append("remarks", remarks);
@@ -145,16 +147,58 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
         onSuccess: () => {
           resetForm();
           setIsLostModalOpen(true);
+          setToastType("success");
+          setToastMessage("Lost item reported successfully");
+          setShowToast(true);
           setTimeout(() => {
             setIsLostModalOpen(false);
             onClose();
           }, 1500);
         },
+        onError: (error: any) => {
+          const backendMessage =
+            error?.response?.data?.message ||
+            error.message ||
+            "Failed to report lost item.";
+          setToastType("error");
+          setToastMessage(backendMessage);
+          setShowToast(true);
+        },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error);
+      setToastType("error");
+      setToastMessage(error.message || "Failed to process image");
+      setShowToast(true);
     }
   };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!image) newErrors.image = "Please capture an image first.";
+    if (selectedCategory === "Select Category") newErrors.category = "Category is required.";
+    if (!firstName) newErrors.firstName = "First name is required.";
+    if (!lastName) newErrors.lastName = "Last name is required.";
+    if (!contactNumber) newErrors.contactNumber = "Contact number is required.";
+    else if (!/^[0-9]{11}$/.test(contactNumber)) newErrors.contactNumber = "Enter a valid 11-digit contact number.";
+    if (!email) newErrors.email = "Email address is required.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Invalid email format.";
+    if (!remarks) newErrors.remarks = "Remarks are required.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Auto-hide toast
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
@@ -210,6 +254,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   </div>
                 )}
               </div>
+              {errors.image && <p className="text-red-500 text-sm mt-1 text-center">{errors.image}</p>}
 
               {/* Category */}
               <div className="relative">
@@ -234,6 +279,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700 pt-8">
                   <ChevronDown size={20} />
                 </div>
+                {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
               </div>
 
               {/* Color */}
@@ -259,6 +305,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700 pt-8">
                   <ChevronDown size={20} />
                 </div>
+                {errors.color && <p className="text-red-500 text-sm mt-1">{errors.color}</p>}
               </div>
 
               {/* Size */}
@@ -284,6 +331,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700 pt-8">
                   <ChevronDown size={20} />
                 </div>
+                {errors.size && <p className="text-red-500 text-sm mt-1">{errors.size}</p>}
               </div>
             </div>
 
@@ -299,6 +347,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("fname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
               </div>
 
               <div>
@@ -311,6 +360,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("lname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
               </div>
 
               <div>
@@ -323,6 +373,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("email")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
 
               <div>
@@ -370,10 +421,13 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("contact")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.contactNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.contactNumber}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Amount Money</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Amount Money</label>
                 <input
                   type="text"
                   placeholder="Enter amount"
@@ -385,7 +439,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Unique Identifier</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Unique Identifier</label>
                 <input
                   type="text"
                   placeholder="N/A"
@@ -397,7 +451,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
                 <input
                   type="text"
                   placeholder="Enter Remarks"
@@ -406,6 +460,7 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("remarks")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
+                {errors.remarks && <p className="text-red-500 text-sm mt-1">{errors.remarks}</p>}
               </div>
 
               <div className="pt-5">
@@ -417,12 +472,21 @@ const PostLostModal = ({ open, onClose }: PostModalProps) => {
                 >
                   {isPending ? "Posting..." : "REPORT"}
                 </button>
-                <FoundModal open={isFoundModalOpen} onClose={() => setIsFoundModalOpen(false)} />
+                <LostModal open={isLostModalOpen} onClose={() => setIsLostModalOpen(false)} />
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Toast */}
+      {showToast && (
+        <ToastMessage
+          type={toastType}
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };

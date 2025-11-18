@@ -1,18 +1,40 @@
-import { login, register } from "../../data/repositories/auth.repository";
-import { LoginRequest, RegisterRequest } from "../../data/models/User";
+import {
+  getUsersByRole,
+  login,
+  register,
+  updateUser,
+} from "../../data/repositories/auth.repository";
+import {
+  LoginRequest,
+  RegisterRequest,
+  User,
+  ApiResponse,
+} from "../../data/models/User";
 
+// Login use case
 export const loginUserUseCase = async (payload: LoginRequest) => {
-  // Call repository → backend will set HttpOnly cookie automatically
   const response = await login(payload);
+  
+  return response;
+};
 
-  if (response.status === "success" && response.data) {
-    localStorage.setItem("user", JSON.stringify(response.data.user));
-  }
+// Register use case
+export const registerUserUseCase = async (payload: RegisterRequest) => {
+  return await register(payload);
+};
 
+// ✅ Update user use case
+export const updateUserUseCase = async (
+  userId: string,
+  payload: Partial<User>
+): Promise<ApiResponse<User>> => {
+  const response = await updateUser(userId, payload);
 
   return response;
 };
 
-export const registerUserUseCase = async (payload: RegisterRequest) => {
-  return await register(payload);
+// Use case for fetching users by role
+export const getUsersByRoleUseCase = async (roleId: number): Promise<User[]> => {
+  const users = await getUsersByRole(roleId);
+  return users;
 };

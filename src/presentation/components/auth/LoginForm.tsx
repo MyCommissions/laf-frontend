@@ -52,7 +52,7 @@ const Login: React.FC = () => {
 
     login(formData, {
       onSuccess: (data) => {
-        // ✅ Immediately update context so ProtectedRoute sees it
+        
         if (data?.data?.user) {
           setUser(data.data.user);
         }
@@ -61,7 +61,7 @@ const Login: React.FC = () => {
         setToastMessage(data.message || "Login successful");
         setShowToast(true);
 
-        // ✅ Short delay for UX, then navigate
+        
 
         if (data.data?.user.role == 1) {
           setTimeout(() => navigate("/admin/home"), 1500);
@@ -120,15 +120,15 @@ const Login: React.FC = () => {
           </div>
 
           {/* Forget Password */}
-          <div className="text-right text-sm text-gray-600 mb-4 cursor-pointer hover:underline">
+          {/* <div className="text-right text-sm text-gray-600 mb-4 cursor-pointer hover:underline">
             Forget Password
-          </div>
+          </div> */}
 
           {/* Submit */}
           <button
             type="submit"
             disabled={isPending}
-            className="w-full bg-black text-white py-2 rounded-full hover:bg-gray-800 transition flex items-center justify-center"
+            className="w-full bg-black text-white py-2 mt-6 rounded-full hover:bg-gray-800 transition flex items-center justify-center"
           >
             {isPending ? (
               <>

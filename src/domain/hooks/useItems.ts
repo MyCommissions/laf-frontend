@@ -4,8 +4,10 @@ import {
   getFoundItems,
   createLostItem,
   createFoundItem,
+  updateItem,
+  deleteItem,
 } from "../usecases/itemUseCases";
-import { getMatchedAndPendingItems } from "../usecases/matchedItemUseCases";
+import { getClaimedItems, getMatchedAndPendingItems } from "../usecases/matchedItemUseCases";
 import type {
   CreateItemRequest,
   CreateItemResponse,
@@ -42,6 +44,35 @@ export function useCreateFoundItem() {
 
   return useMutation<CreateItemResponse, Error, CreateItemRequest | FormData>({
     mutationFn: createFoundItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+    },
+  });
+}
+
+export function useGetClaimedItems() {
+  return useQuery<Item[], Error>({
+    queryKey: ["claimed-items"],
+    queryFn: getClaimedItems,
+  });
+}
+
+export function useUpdateItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Item, Error, { id: string; updatedData: Partial<Item> }>({
+    mutationFn: ({ id, updatedData }) => updateItem(id, updatedData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+    },
+  });
+}
+
+export function useDeleteItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation<{ status: string; message: string }, Error, string>({
+    mutationFn: (id) => deleteItem(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
     },
