@@ -61,7 +61,7 @@ export interface Item {
   matched: boolean;
   createdAt: string;
   updatedAt: string;
-  status?: "pending" | "matched" | "claimed"; // lowercase to match backend
+  status?: "unclaimed" | "matched" | "claimed"; // lowercase to match backend
   type?: "lost" | "found";
 
   // ✅ Nested structure for matched/pending records
