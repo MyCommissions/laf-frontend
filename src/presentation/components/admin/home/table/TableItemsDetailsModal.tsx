@@ -120,7 +120,7 @@ const TableItemDetailsModal: React.FC<DetailsModalProps> = ({
           </div>
 
           {/* Footer */}
-          {item.status?.toLowerCase() === "pending" && (
+          {item.status?.toLowerCase() === "unclaimed" && (
             <div className="flex justify-end gap-3 mt-8 border-t pt-4">
               <button
                 onClick={() => setShowConfirm(true)}
