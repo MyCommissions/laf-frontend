@@ -21,7 +21,7 @@ const categories: string[] = [
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Category");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"Pending" | "Matched">("Pending");
+  const [activeTab, setActiveTab] = useState<"Unclaimed" | "Matched">("Unclaimed");
 
   const { data: items, isLoading, isError, refetch } =
     useGetMatchedAndPendingItems();
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
             .includes(searchQuery.toLowerCase()))
     ) || [];
 
-  const handleTabClick = (tab: "Pending" | "Matched") => setActiveTab(tab);
+  const handleTabClick = (tab: "Unclaimed" | "Matched") => setActiveTab(tab);
 
   const refreshTable = () => refetch();
 
@@ -95,10 +95,10 @@ const Home: React.FC = () => {
             </div>
 
             <div className="flex bg-gray-200 rounded-full p-1 relative">
-              {["Pending", "Matched"].map((tab) => (
+              {["Unclaimed", "Matched"].map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => handleTabClick(tab as "Pending" | "Matched")}
+                  onClick={() => handleTabClick(tab as "Unclaimed" | "Matched")}
                   className={`relative z-10 px-4 py-1 text-sm font-medium rounded-full transition-all duration-300 ${
                     activeTab === tab
                       ? "text-white"

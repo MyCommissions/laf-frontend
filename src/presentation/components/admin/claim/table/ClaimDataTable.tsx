@@ -56,9 +56,9 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
     if (status?.toLowerCase() === "claimed") {
       bgClass = "bg-green-500";
       label = "Claimed";
-    } else if (status?.toLowerCase() === "pending") {
+    } else if (status?.toLowerCase() === "unclaimed") {
       bgClass = "bg-yellow-500";
-      label = "Pending";
+      label = "Unclaimed";
     } else {
       bgClass = "bg-gray-500";
       label = "Unknown";

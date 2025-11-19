@@ -183,7 +183,7 @@ const ClaimItemModal = ({ open, onClose, matchedItemId }: ClaimItemModalProps) =
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left: Image */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Proof Picture</h3>
+              <h3 className="font-semibold text-lg">Take a Photo of yourself</h3>
               <div className="relative w-full h-48 border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center bg-white">
                 {image ? (
                   <img src={image} alt="Claim proof" className="w-full h-full object-contain" />
