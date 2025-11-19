@@ -124,7 +124,7 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
             const createdAt = new Date(item.createdAt);
             const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
             const date = createdAt.toLocaleDateString();
-            const rawStatus = item.status?.toLowerCase() || "pending";
+            const rawStatus = item.status?.toLowerCase() || "unclaimed";
 
             return (
               <React.Fragment key={item._id}>
@@ -160,7 +160,7 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
                   <div className="flex flex-col items-start">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        rawStatus === "pending"
+                        rawStatus === "unclaimed"
                           ? "bg-yellow-400 text-yellow-900"
                           : rawStatus === "matched"
                           ? "bg-blue-400 text-blue-900"
