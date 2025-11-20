@@ -4,14 +4,11 @@ import React, { useState } from "react";
 import ItemDetailsModal from "./itemDetailsModal";
 import ClaimModal from "./ClaimModal";
 import { getDisplayImageUrl } from "../../../utils/imageHelper";
+import { Item } from "../../../data/models/Item";
 
 
 interface LostItemCardProps {
-  itemName: string;
-  id: string;
-  time: string; // item.createdAt from DB
-  description: string;
-  imageSrc?: string; // raw key from DB
+  item: Item
 }
 
 const formatDateTime = (isoString: string) => {
@@ -33,34 +30,30 @@ const formatDateTime = (isoString: string) => {
 };
 
 const FoundCard: React.FC<LostItemCardProps> = ({
-  id,
-  itemName,
-  time,
-  description,
-  imageSrc,
+  item,
 }) => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isClaimOpen, setIsClaimOpen] = useState(false);
 
   // Format time
-  const { formattedDate, formattedTime } = formatDateTime(time);
+  const { formattedDate, formattedTime } = formatDateTime(item.createdAt);
 
   // ✅ Build final image URL (or placeholder)
-  const finalImageSrc = getDisplayImageUrl(imageSrc);
+  const finalImageSrc = getDisplayImageUrl(item.imageUrl);
 
   return (
     <div className="flex justify-center p-4">
       <div className="bg-white rounded-3xl shadow-lg border-2 border-gray-900 p-6 w-80 font-serif flex flex-col h-[500px]">
         {/* Header */}
         <div className="flex justify-between items-center mb-4 text-gray-800">
-          <span className="text-lg font-semibold">{itemName}</span>
+          <span className="text-lg font-semibold">{item.category}</span>
           <span className="text-sm">{formattedDate}</span>
         </div>
 
         {/* Image */}
         <div className="flex justify-center mb-4">
           <div className="w-full max-w-xs h-48">
-            <img src={finalImageSrc} alt={itemName} className="w-full h-full rounded-lg object-cover" />
+            <img src={finalImageSrc} alt={item.category} className="w-full h-full rounded-lg object-cover" />
           </div>
         </div>
 
@@ -70,10 +63,10 @@ const FoundCard: React.FC<LostItemCardProps> = ({
             <span className="text-sm font-semibold text-gray-800">
               {formattedTime}
             </span>
-            <span className="text-sm text-gray-500">ID: {id}</span>
+            <span className="text-sm text-gray-500">ID: {item._id}</span>
           </div>
           <div className="mb-4">
-            <p className="text-sm text-gray-700 line-clamp-2">{description}</p>
+            <p className="text-sm text-gray-700 line-clamp-2">{item.remarks}</p>
           </div>
         </div>
 
@@ -100,19 +93,13 @@ const FoundCard: React.FC<LostItemCardProps> = ({
 
       {/* Item Details Modal */}
       <ItemDetailsModal
-        item={{
-          id,
-          itemName,
-          time: formattedTime,
-          description,
-          imageSrc: finalImageSrc,
-        }}
+        item={item}
         open={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
       />
 
       {/* Claim Modal */}
-      <ClaimModal onClose={() => setIsClaimOpen(false)} open={isClaimOpen} matchedItemId={id} />
+      <ClaimModal onClose={() => setIsClaimOpen(false)} open={isClaimOpen} matchedItemId={item._id} />
     </div>
   );
 };

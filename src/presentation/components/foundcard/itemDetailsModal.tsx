@@ -5,13 +5,7 @@ import { Item } from "../../../data/models/Item";
 interface ItemDetailsModalProps {
   open: boolean;
   onClose: () => void;
-  item: Partial<Item> & {
-    id?: string;           // ✅ allow id
-    itemName?: string;
-    description?: string;
-    imageSrc?: string;
-    time?: string;
-  } | null;
+  item: Item
 }
 
 const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({ item, open, onClose }) => {
@@ -30,14 +24,14 @@ const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({ item, open, onClose
 
         {/* Title */}
         <h2 className="text-2xl font-bold mb-4 text-gray-800">
-          {item.itemName || item.category || "Item"} Details
+          {item.category || "Item"} Details
         </h2>
 
         {/* Image */}
-        {item.imageSrc || item.imageUrl ? (
+        {item.imageUrl ? (
           <img
-            src={item.imageSrc || `https://<your-r2-bucket-url>/${item.imageUrl}`}
-            alt={item.itemName || item.category}
+            src={`https://<your-r2-bucket-url>/${item.imageUrl}`}
+            alt={item.category}
             className="w-full h-64 object-cover rounded-lg mb-4"
           />
         ) : (
@@ -48,7 +42,7 @@ const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({ item, open, onClose
 
         {/* Item Info */}
         <div className="space-y-2 text-gray-700">
-          {item.id && <p><strong>ID:</strong> {item.id}</p>}
+          {item._id && <p><strong>ID:</strong> {item._id}</p>}
           {item.firstName && item.lastName && (
             <p><strong>Owner:</strong> {item.firstName} {item.lastName}</p>
           )}
@@ -62,7 +56,7 @@ const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({ item, open, onClose
           {item.uniqueIdentifier && <p><strong>UID:</strong> {item.uniqueIdentifier}</p>}
           {item.moneyAmount !== undefined && <p><strong>Amount:</strong> ₱{item.moneyAmount}</p>}
           {item.remarks && <p><strong>Remarks:</strong> {item.remarks}</p>}
-          {item.time && <p><strong>Time:</strong> {item.time}</p>}
+          {item.createdAt && <p><strong>Time:</strong> {item.createdAt}</p>}
           {item.found !== undefined && (
             <p>
               <strong>Status:</strong> {item.found ? "Found Item" : "Lost Report"}{" "}
