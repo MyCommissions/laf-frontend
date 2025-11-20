@@ -5,10 +5,26 @@ import FoundModal from "../thankyoumodal/FoundModal";
 import { useCreateFoundItem } from "../../../domain/hooks/useItems";
 import { CATEGORIES } from "../../../data/models/Item";
 import { ToastMessage } from "../ui/ToastMessage";
-import { useQueryClient } from "@tanstack/react-query";
 
 const categories: string[] = ["Select Category", ...CATEGORIES];
-const colors: string[] = ["Select Color","Black" , "White" , "Gray" , "Blue" , "Red" , "Green" , "Yellow" , "Brown" , "Pink" , "Purple" , "Orange" , "Gold" , "Silver" , "Beige / Cream" , "Transparent / Clear"];
+const colors: string[] = [
+  "Select Color",
+  "Black",
+  "White",
+  "Gray",
+  "Blue",
+  "Red",
+  "Green",
+  "Yellow",
+  "Brown",
+  "Pink",
+  "Purple",
+  "Orange",
+  "Gold",
+  "Silver",
+  "Beige / Cream",
+  "Transparent / Clear",
+];
 const itemSizes: string[] = ["Select Item Size", "Small", "Medium", "Large"];
 
 interface PostModalProps {
@@ -133,7 +149,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
         if (["uid"].includes(field)) return true;
         break;
       case "Gadgets":
-        if (["color", "size", "amount"].includes(field)) return true;
+        if (["size", "amount"].includes(field)) return true;
         break;
       case "Keys":
         if (["color", "amount", "uid"].includes(field)) return true;
@@ -195,7 +211,6 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
           }, 1500);
         },
         onError: (error: any) => {
-          // ✅ Properly show backend error message instead of Axios default
           const backendMessage =
             error?.response?.data?.message ||
             error?.message ||
@@ -217,7 +232,13 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 font-serif">
-      <div className="bg-gray-200 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden relative">
+      <div
+        className="
+          bg-gray-200 rounded-xl shadow-2xl
+          w-[95%] md:w-[92%] lg:w-[80%]
+          max-w-4xl max-h-[95vh] overflow-y-auto relative
+        "
+      >
         {/* Camera Overlay */}
         {isCameraOpen && (
           <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 p-4">
@@ -251,8 +272,8 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
 
         {/* Body */}
         <div className="p-6 bg-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Picture */}
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Picture Section */}
             <div className="md:col-span-1 space-y-4">
               <h3 className="font-semibold text-lg mb-1">Item Picture</h3>
               <div className="relative w-full h-48 border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center p-4 bg-white">
@@ -333,7 +354,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
             </div>
 
-            {/* Other Fields */}
+            {/* Other Form Fields */}
             <div className="flex flex-col space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">First Name</label>
@@ -345,9 +366,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("fname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
-                {errors.firstName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
-                )}
+                {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
               </div>
 
               <div>
@@ -360,15 +379,11 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
                   disabled={isDisabled("lname")}
                   className="w-full p-2 border border-gray-300 rounded-lg bg-gray-200 disabled:bg-gray-300"
                 />
-                {errors.lastName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
-                )}
+                {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                 <input
                   type="text"
                   placeholder="Enter email"
@@ -381,9 +396,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Brand Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Brand Name</label>
                 <input
                   type="text"
                   placeholder="Enter Brand"
@@ -418,9 +431,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
             {/* Contact & Others */}
             <div className="flex flex-col space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Contact No.
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">Contact No.</label>
                 <input
                   type="text"
                   placeholder="Enter phone number"
@@ -435,9 +446,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Amount Money
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Amount Money</label>
                 <input
                   type="text"
                   placeholder="Enter amount"
@@ -449,9 +458,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Unique Identifier
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Unique Identifier</label>
                 <input
                   type="text"
                   placeholder="N/A"
@@ -488,11 +495,7 @@ const PostFoundModal = ({ open, onClose }: PostModalProps) => {
 
               {/* Toast */}
               {showToast && (
-                <ToastMessage
-                  type={toastType}
-                  message={toastMessage}
-                  onClose={() => setShowToast(false)}
-                />
+                <ToastMessage type={toastType} message={toastMessage} onClose={() => setShowToast(false)} />
               )}
             </div>
           </div>
