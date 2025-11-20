@@ -12,7 +12,7 @@ export interface MatchedItem {
   _id: string;
   lostItem: Item | string;
   foundItem: Item | string;
-  status: "pending" | "matched" | "claimed";
+  status: "unclaimed" | "matched" | "claimed";
   claimedBy?: string | null; // User ID
   claimInfo?: ClaimInfo | null;
   createdAt: string;

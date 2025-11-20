@@ -21,7 +21,7 @@ const categories: string[] = [
 const Claim: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("Category");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"Pending" | "Matched">("Matched");
+  const [activeTab, setActiveTab] = useState<"Unclaimed" | "Matched">("Matched");
 
   // ✅ Fetch claimed items using your React Query hook
   const { data: items = [], isLoading, isError } = useGetClaimedItems();

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { useAuthUser } from "../../../../domain/hooks/useCurrentUser";
 import { useUserByRole, useUpdateUser } from "../../../../domain/hooks/useAuth";
@@ -103,6 +105,17 @@ const Account: React.FC = () => {
     }
   }, [showToast]);
 
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleEditToggle = () => setIsEditing(!isEditing);
 
   const handleSave = () => {
@@ -117,10 +130,8 @@ const Account: React.FC = () => {
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
 
     if (showPasswordFields && newPassword) {
-      if (role === "user" && !currentPassword)
-        newErrors.currentPassword = "Please enter current password";
-      if (newPassword !== confirmPassword)
-        newErrors.confirmPassword = "Passwords do not match";
+      if (role === "user" && !currentPassword) newErrors.currentPassword = "Please enter current password";
+      if (newPassword !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -198,14 +209,14 @@ const Account: React.FC = () => {
     onToggle?: () => void
   ) => (
     <div className="flex flex-col">
-      <div className="flex justify-between items-center border-b border-gray-200 pb-3">
-        <div className="text-gray-600 font-medium">{label}</div>
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 pb-3">
+        <div className="text-gray-600 font-medium mb-2 md:mb-0">{label}</div>
+        <div className="flex items-center space-x-2 md:ml-4 md:w-1/2">
           <input
             type={showValue ? "text" : type}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="text-right border-none focus:ring-0 focus:outline-none"
+            className="w-full md:text-right text-left border-none focus:ring-0 focus:outline-none"
           />
           {showToggle && onToggle && (
             <button onClick={onToggle} className="text-gray-400 hover:text-gray-600">
@@ -219,12 +230,12 @@ const Account: React.FC = () => {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-lg bg-white rounded-3xl shadow-lg p-6">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl bg-white rounded-3xl shadow-lg p-5 sm:p-6 md:p-8">
         {/* Role Tabs */}
         <div className="flex justify-between mb-6 border-b-2 border-gray-200">
           <div
-            className={`cursor-pointer px-4 py-2 font-semibold transition-colors duration-200 ${
+            className={`cursor-pointer px-3 py-2 font-semibold transition-colors duration-200 ${
               role === "user"
                 ? "text-blue-500 border-b-2 border-blue-500"
                 : "text-gray-500 hover:text-gray-700"
@@ -234,7 +245,7 @@ const Account: React.FC = () => {
             User
           </div>
           <div
-            className={`cursor-pointer px-4 py-2 font-semibold transition-colors duration-200 ${
+            className={`cursor-pointer px-3 py-2 font-semibold transition-colors duration-200 ${
               role === "admin"
                 ? "text-blue-500 border-b-2 border-blue-500"
                 : "text-gray-500 hover:text-gray-700"
@@ -246,33 +257,53 @@ const Account: React.FC = () => {
         </div>
 
         {/* Header */}
-        <div className="flex items-center space-x-4 mb-8">
-          <div className="relative w-24 h-24">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-6">
+          <div className="relative flex-shrink-0">
             {profilePicture ? (
               <img
                 src={profilePicture}
                 alt="Profile"
-                className="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md"
+                className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full object-cover border-4 border-gray-300 shadow-md"
               />
             ) : (
               <div
-                className="w-full h-full rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-gray-300 shadow-md"
+                className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-gray-300 shadow-md"
                 style={{ backgroundColor: getProfileBgColor(activeData?.id || role) }}
               >
                 {getInitials(firstname, lastname)}
               </div>
             )}
+            {/* optional file upload (kept as your original) */}
+            <label
+              htmlFor="file-upload"
+              className="absolute bottom-0 right-0 p-1 bg-white rounded-full cursor-pointer shadow-md border border-gray-300"
+            >
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </label>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-              {firstname} {lastname}
+
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg sm:text-2xl font-bold text-gray-800 flex items-center">
+              <span className="truncate">
+                {firstname} {lastname}
+              </span>
               <span className="text-xs ml-2 px-2 py-1 font-normal bg-gray-200 text-gray-700 rounded-full capitalize">
                 {role}
               </span>
             </h2>
-            <p className="text-sm text-gray-500">{email}</p>
+            <p className="text-sm text-gray-500 truncate">{email}</p>
           </div>
-          <div className="ml-auto text-gray-400 hover:text-gray-600 cursor-pointer" onClick={handleEditToggle}>
+
+          <div
+            className="ml-auto text-gray-400 hover:text-gray-600 cursor-pointer self-start md:self-center"
+            onClick={handleEditToggle}
+          >
             {isEditing ? <X size={24} /> : <span className="font-semibold">Edit</span>}
           </div>
         </div>
@@ -348,7 +379,7 @@ const Account: React.FC = () => {
             )}
 
             {isEditing && (
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-end pt-2">
                 <button
                   onClick={handleSave}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -366,11 +397,7 @@ const Account: React.FC = () => {
 
         {/* Toast */}
         {showToast && (
-          <ToastMessage
-            type={toastType}
-            message={toastMessage}
-            onClose={() => setShowToast(false)}
-          />
+          <ToastMessage type={toastType} message={toastMessage} onClose={() => setShowToast(false)} />
         )}
       </div>
     </div>
