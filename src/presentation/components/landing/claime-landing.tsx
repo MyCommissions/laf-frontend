@@ -11,23 +11,17 @@ export default function ClaimeLanding() {
           <img
             alt="logo"
             src="/hand.png"
-            className="w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 object-contain"
+            className="w-100 h-100 flex items-center justify-center"
           />
         </div>
 
         {/* Brand Name */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black tracking-tight">
-          ClaiMe
-        </h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-black tracking-tight">ClaiMe</h1>
 
         {/* Tagline Section */}
         <div className="space-y-2">
-          <p className="text-lg md:text-xl lg:text-2xl text-gray-800 font-medium">
-            Claim what is yours
-          </p>
-          <p className="text-base md:text-lg lg:text-xl text-gray-600">
-            — fast, easy, secure.
-          </p>
+          <p className="text-lg md:text-xl text-gray-800 font-medium">Claim what is yours</p>
+          <p className="text-base md:text-lg text-gray-600">— fast, easy, secure.</p>
         </div>
 
         {/* Call to Action Button */}
