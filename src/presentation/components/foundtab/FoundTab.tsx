@@ -163,11 +163,7 @@ const FoundTab: React.FC = () => {
               {filteredItems.map((item) => (
                 <div key={item._id} className="flex-shrink-0 w-80 snap-start">
                   <FoundCard
-                    id={item._id}
-                    itemName={item.category}
-                    time={item.createdAt}
-                    description={item.remarks || "No description provided"}
-                    imageSrc={item.imageUrl}
+                    item={item}
                   />
                 </div>
               ))}
