@@ -116,7 +116,6 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
             const date = createdAt.toLocaleDateString();
 
             const imageUrl =
-              getDisplayImageUrl(displayItem.imageUrl) ||
               getDisplayImageUrl(displayItem.claimInfo?.imageUuid) ||
               "https://placehold.co/40x40/0f172a/ffffff?text=?";
 
