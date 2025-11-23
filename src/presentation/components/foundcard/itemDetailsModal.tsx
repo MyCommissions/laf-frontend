@@ -1,6 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { Item } from "../../../data/models/Item";
+import { getDisplayImageUrl } from "../../../utils/imageHelper";
 
 interface ItemDetailsModalProps {
   open: boolean;
@@ -36,7 +37,7 @@ const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
           {/* Image */}
           {item.imageUrl ? (
             <img
-              src={`https://<your-r2-bucket-url>/${item.imageUrl}`}
+              src={getDisplayImageUrl(item.imageUrl)}
               alt={item.category}
               className="w-full h-52 sm:h-64 md:h-72 object-cover rounded-lg mb-6 shadow-sm"
             />
