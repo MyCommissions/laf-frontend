@@ -67,7 +67,7 @@ const Claim: React.FC = () => {
       {/* Header */}
       <div className="bg-white p-6 shadow-md rounded-lg mb-8">
         <h1 className="text-4xl font-serif font-bold text-gray-800 mb-6">
-          Records
+          Claimed Items
         </h1>
 
         {/* Controls */}
