@@ -28,25 +28,25 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
 
   const mapMatchedWithToItem = (matched: Item["matchedWith"], parentItem: Item): Item => ({
     _id: matched!._id,
-    firstName: parentItem.firstName,  // fallback
+    firstName: parentItem.firstName,
     lastName: parentItem.lastName,
     email: parentItem.email,
     contactNumber: parentItem.contactNumber,
     createdAt: parentItem.createdAt,
     updatedAt: parentItem.updatedAt,
-    category: matched!.category as Item["category"], // cast to satisfy TS
+    category: matched!.category as Item["category"],
     itemColor: matched!.itemColor as Item["itemColor"],
     itemSize: parentItem.itemSize,
     brandType: parentItem.brandType,
     uniqueIdentifier: parentItem.uniqueIdentifier,
     status: "matched",
-    found: matched!.type === "found", // ✅ this is what controls Found vs Lost
+    found: matched!.type === "found",
     matched: true,
     claimed: false,
     imageUrl: parentItem.imageUrl,
     moneyAmount: parentItem.moneyAmount,
     matchedWith: undefined,
-    type: matched!.type, // important!
+    type: matched!.type,
   });
 
   const sortedItems = useMemo(() => {
@@ -63,22 +63,22 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
 
   const renderSortIcon = (key: keyof Item | "date") => {
     if (sortConfig.key !== key)
-      return <ArrowUpDown size={14} className="inline ml-1 text-gray-400" />;
+      return <ArrowUpDown size={14} className="inline ml-1 text-gray-600" />;
     return sortConfig.direction === "asc" ? (
-      <ArrowUp size={14} className="inline ml-1 text-gray-400" />
+      <ArrowUp size={14} className="inline ml-1 text-gray-600" />
     ) : (
-      <ArrowDown size={14} className="inline ml-1 text-gray-400" />
+      <ArrowDown size={14} className="inline ml-1 text-gray-600" />
     );
   };
 
   if (!items.length)
     return (
-      <div className="text-center text-gray-400 mt-10">
+      <div className="text-center text-gray-600 mt-10">
         No items found.
         <div className="mt-3">
           <button
             onClick={refreshTable}
-            className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium bg-gray-700 hover:bg-gray-600 text-white rounded-md transition"
+            className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium bg-gray-200 hover:bg-gray-300 text-black rounded-md transition"
           >
             <RefreshCw size={14} /> Refresh
           </button>
@@ -87,12 +87,12 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
     );
 
   return (
-    <div className="bg-[#0f172a] rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
+    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
       {/* Refresh Button */}
       <div className="flex justify-end mb-3">
         <button
           onClick={refreshTable}
-          className="flex items-center gap-2 px-3 py-1 text-xs font-medium bg-gray-700 hover:bg-gray-600 text-white rounded-md transition"
+          className="flex items-center gap-2 px-3 py-1 text-xs font-medium bg-gray-200 hover:bg-gray-300 text-black rounded-md transition"
         >
           <RefreshCw size={14} /> Refresh
         </button>
@@ -100,7 +100,7 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
 
       {/* Table */}
       <div className="min-w-[1000px]">
-        <div className="grid grid-cols-[2fr,repeat(11,1fr)] py-4 px-4 border-b border-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-200 select-none">
+        <div className="grid grid-cols-[2fr,repeat(11,1fr)] py-4 px-4 border-b border-gray-300 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-700 select-none">
           <div />
           <div onClick={() => handleSort("_id")} className="cursor-pointer flex items-center">
             Item No. {renderSortIcon("_id")}
@@ -119,7 +119,7 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
           <div>Status</div>
         </div>
 
-        <div className="divide-y divide-gray-700">
+        <div className="divide-y divide-gray-300">
           {sortedItems.map((item, index) => {
             const createdAt = new Date(item.createdAt);
             const time = createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -131,7 +131,7 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
                 {/* Table Row */}
                 <div
                   onClick={() => setSelectedItem(item)}
-                  className="grid grid-cols-[2fr,repeat(11,1fr)] py-4 px-4 hover:bg-gray-800 transition-colors text-gray-100 cursor-pointer text-xs sm:text-sm"
+                  className="grid grid-cols-[2fr,repeat(11,1fr)] py-4 px-4 hover:bg-gray-100 transition-colors text-black cursor-pointer text-xs sm:text-sm"
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -143,10 +143,11 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
                       <div className="font-medium">
                         {item.firstName} {item.lastName}
                       </div>
-                      <div className="text-xs text-gray-400">{item.email}</div>
-                      <div className="text-xs text-gray-400">{item.contactNumber}</div>
+                      <div className="text-xs text-gray-600">{item.email}</div>
+                      <div className="text-xs text-gray-600">{item.contactNumber}</div>
                     </div>
                   </div>
+
                   <div>{index + 1}</div>
                   <div>{time}</div>
                   <div>{date}</div>
@@ -157,6 +158,7 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
                   <div>{item.itemColor ?? "-"}</div>
                   <div>{item.brandType ?? "-"}</div>
                   <div>{item.uniqueIdentifier ?? "-"}</div>
+
                   <div className="flex flex-col items-start">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -170,17 +172,16 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
                       {rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1)}
                     </span>
 
-                    {/* ✅ Small text indicator */}
                     {rawStatus === "matched" && item.matchedWith && (
-                      <span className="mt-1 text-[11px] text-gray-300 italic">
+                      <span className="mt-1 text-[11px] text-gray-700 italic">
                         Matched with:{" "}
-                        <span className="font-medium text-white">
+                        <span className="font-medium text-black">
                           {item.matchedWith.category} ({item.matchedWith.type})
                         </span>
                       </span>
                     )}
                   </div>
-                  {/* ✅ Matched pair section (below row, not inside it) */}
+
                   {rawStatus === "matched" && item.matchedWith && (
                     <div className="mt-2">
                       <button
@@ -192,7 +193,6 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
                     </div>
                   )}
                 </div>
-
               </React.Fragment>
             );
           })}
@@ -204,7 +204,7 @@ const DataTable: React.FC<DataTableProps> = ({ items, refreshTable }) => {
         <TableItemDetailsModal
           item={selectedItem}
           onClose={() => setSelectedItem(null)}
-          refreshTable={refreshTable} // ✅ triggers after save
+          refreshTable={refreshTable}
         />
       )}
     </div>

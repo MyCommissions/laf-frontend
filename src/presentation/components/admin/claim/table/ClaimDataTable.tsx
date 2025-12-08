@@ -3,14 +3,14 @@ import React, { useState, useMemo } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import type { Item } from "../../../../../data/models/Item";
 import { getDisplayImageUrl } from "../../../../../utils/imageHelper";
-import ClaimDetailsModal from "./ClaimDetailsModal"; // <-- IMPORT MODAL
+import ClaimDetailsModal from "./ClaimDetailsModal";
 
 interface ClaimDataTableProps {
   items: Item[];
 }
 
 const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
-  // 🔥 NEW — Modal State
+  // Modal State
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -47,11 +47,11 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
 
   const renderSortIcon = (key: keyof Item | "date") => {
     if (sortConfig.key !== key)
-      return <ArrowUpDown size={14} className="inline ml-1 text-gray-400" />;
+      return <ArrowUpDown size={14} className="inline ml-1 text-gray-600" />;
     return sortConfig.direction === "asc" ? (
-      <ArrowUp size={14} className="inline ml-1 text-gray-400" />
+      <ArrowUp size={14} className="inline ml-1 text-gray-600" />
     ) : (
-      <ArrowDown size={14} className="inline ml-1 text-gray-400" />
+      <ArrowDown size={14} className="inline ml-1 text-gray-600" />
     );
   };
 
@@ -80,36 +80,28 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
   return (
     <>
       {/* TABLE */}
-      <div className="bg-[#0f172a] rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
+      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 w-full overflow-x-auto">
         <div className="min-w-[1100px] md:min-w-[1250px] lg:min-w-[1400px]">
+
           {/* HEADER */}
           <div
             className="
               grid 
               grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] 
               py-4 px-4 
-              border-b border-gray-700 
+              border-b border-gray-300
               text-[10px] sm:text-xs md:text-sm 
-              font-semibold uppercase tracking-wider text-gray-200
+              font-semibold uppercase tracking-wider text-black
             "
           >
             <div className="col-span-1" />
-            <div
-              onClick={() => handleSort("_id")}
-              className="cursor-pointer flex items-center"
-            >
+            <div onClick={() => handleSort("_id")} className="cursor-pointer flex items-center">
               Item No. {renderSortIcon("_id")}
             </div>
-            <div
-              onClick={() => handleSort("createdAt")}
-              className="cursor-pointer flex items-center"
-            >
+            <div onClick={() => handleSort("createdAt")} className="cursor-pointer flex items-center">
               Time {renderSortIcon("createdAt")}
             </div>
-            <div
-              onClick={() => handleSort("date")}
-              className="cursor-pointer flex items-center"
-            >
+            <div onClick={() => handleSort("date")} className="cursor-pointer flex items-center">
               Date {renderSortIcon("date")}
             </div>
 
@@ -124,7 +116,7 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
           </div>
 
           {/* ROWS */}
-          <div className="divide-y divide-gray-700">
+          <div className="divide-y divide-gray-300">
             {sortedItems.map((item, index) => {
               const displayItem = item.foundItem || item.lostItem || item;
 
@@ -135,10 +127,9 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
               });
               const date = createdAt.toLocaleDateString();
 
-              // IMAGE
               const imageUrl =
                 getDisplayImageUrl(displayItem.claimInfo?.imageUuid) ||
-                "https://placehold.co/40x40/0f172a/ffffff?text=?";
+                "https://placehold.co/40x40/ffffff/000000?text=?";
 
               const itemType =
                 displayItem.type ||
@@ -148,16 +139,16 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
                 <div
                   key={item._id}
                   onClick={() => {
-                    setSelectedItem(item); // assign item
-                    setModalOpen(true); // open modal
+                    setSelectedItem(item);
+                    setModalOpen(true);
                   }}
                   className="
                     grid 
                     grid-cols-[2fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr,1fr] 
                     py-4 px-4 
                     items-center 
-                    hover:bg-gray-800 transition-colors 
-                    text-gray-100 
+                    hover:bg-gray-100 transition-colors 
+                    text-black
                     cursor-pointer 
                     text-[10px] sm:text-xs md:text-sm
                     active:scale-[0.99]
@@ -174,10 +165,10 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
                       <div className="font-medium">
                         {displayItem.firstName} {displayItem.lastName}
                       </div>
-                      <div className="text-gray-400 text-[9px] sm:text-xs">
+                      <div className="text-gray-600 text-[9px] sm:text-xs">
                         {displayItem.email}
                       </div>
-                      <div className="text-gray-400 text-[9px] sm:text-xs">
+                      <div className="text-gray-600 text-[9px] sm:text-xs">
                         {displayItem.contactNumber}
                       </div>
                     </div>
@@ -185,7 +176,7 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
 
                   <div className="font-medium">{index + 1}</div>
                   <div className="font-medium">{time}</div>
-                  <div className="text-gray-400">{date}</div>
+                  <div className="text-gray-600">{date}</div>
 
                   <div className="capitalize">{itemType}</div>
                   <div>{displayItem.category}</div>
@@ -205,7 +196,7 @@ const ClaimDataTable: React.FC<ClaimDataTableProps> = ({ items }) => {
         </div>
       </div>
 
-      {/* MODAL — Pops up on row click */}
+      {/* MODAL */}
       <ClaimDetailsModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
